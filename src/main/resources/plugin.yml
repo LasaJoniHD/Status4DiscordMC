@@ -1,0 +1,8 @@
+main: joni.status4discordmc.Status4Discord
+name: Status4Discord
+version: 1.0
+author: LasaJoni
+api-version: 1.17
+load: STARTUP
+description: Insane status!
+softdepend: [PlaceholderAPI]
