@@ -70,7 +70,7 @@ public class Discord {
 					e.printStackTrace();
 				}
 				Status4Discord.logger().info(message);
-				textChannel.editMessageById(message, "und edit");
+				textChannel.editMessageById(message, "und edit").queue();
 			}
 		}.start();
 	}
