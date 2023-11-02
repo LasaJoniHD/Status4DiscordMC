@@ -6,6 +6,7 @@ apply plugin: "eclipse"
 repositories {
     mavenCentral()
     maven {url "https://repo.papermc.io/repository/maven-public/"}
+    maven {url "https://repo.extendedclip.com/content/repositories/placeholderapi/"}
 }
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20-R0.1-SNAPSHOT")
@@ -13,6 +14,7 @@ dependencies {
     implementation("net.dv8tion:JDA:5.0.0-beta.15") {
         exclude module: 'opus-java'
     }
+    compileOnly("me.clip:placeholderapi:2.11.4")
 }
 java {
     toolchain {
