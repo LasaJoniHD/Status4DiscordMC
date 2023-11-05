@@ -60,7 +60,7 @@ public class Discord {
 		Logger log = plugin.getLogger();
 		logs = new Logs(bot, log, config);
 		activityStatus = new ActivityStatus(bot, log, config);
-		embedStatus = new EmbedStatus(bot, log, config);
+		embedStatus = new EmbedStatus(bot, log, config, plugin);
 	}
 
 	public ActivityStatus getActivityStatus() {

@@ -6,6 +6,7 @@ token: "ODE5OTc0NDMwOTA2MjUzMzEz.GXqzcC.NAm9D2lrV_-EaQ5q9D3R3NgQhqHxFwWJtLaRFw"
 
 embed:
   enabled: true
+  serverIP: "server.properties"
   textChannelID: "1159154870704676905"
 
 embedMessageID: "0"

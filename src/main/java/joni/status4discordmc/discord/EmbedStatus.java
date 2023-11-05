@@ -1,13 +1,13 @@
 package joni.status4discordmc.discord;
 
 import java.awt.Color;
+import java.time.Instant;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import joni.status4discordmc.Placeholders;
-import joni.status4discordmc.Status4Discord;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -17,13 +17,15 @@ public class EmbedStatus {
 	private JDA bot;
 	private FileConfiguration config;
 	private Logger logger;
+	private JavaPlugin plugin;
 
-	private Boolean updateEmbed;
+	private Boolean updateEmbed = true;
 
-	public EmbedStatus(JDA bot, Logger logger, FileConfiguration config) {
+	public EmbedStatus(JDA bot, Logger logger, FileConfiguration config, JavaPlugin plugin) {
 		this.bot = bot;
 		this.logger = logger;
 		this.config = config;
+		this.plugin = plugin;
 	}
 
 	public void start() {
@@ -43,9 +45,16 @@ public class EmbedStatus {
 		scheduler(textChannel);
 	}
 
-	public void update(TextChannel textChannel) {
+	public void update() {
+		TextChannel textChannel = bot.getTextChannelById(config.getString("embed.textChannelID"));
 		String embedMessageID = config.getString("embedMessageID");
 		textChannel.editMessageEmbedsById(embedMessageID, embed().build()).queue();
+	}
+
+	public void update(EmbedBuilder embed) {
+		TextChannel textChannel = bot.getTextChannelById(config.getString("embed.textChannelID"));
+		String embedMessageID = config.getString("embedMessageID");
+		textChannel.editMessageEmbedsById(embedMessageID, embed.build()).queue();
 	}
 
 	private void scheduler(TextChannel textChannel) {
@@ -53,7 +62,7 @@ public class EmbedStatus {
 			public void run() {
 				while (updateEmbed) {
 					try {
-						sleep(30000);
+						sleep(10000);
 					} catch (InterruptedException e) {
 						logger.fine("Updating the Embed failed! Thread interrupted!");
 					}
@@ -66,7 +75,8 @@ public class EmbedStatus {
 							logger.fine("Updating the Embed failed! Thread interrupted!");
 						}
 					}
-					textChannel.editMessageEmbedsById(embedMessageID, embed().build()).queue();
+					if (updateEmbed)
+						textChannel.editMessageEmbedsById(embedMessageID, embed().build()).queue();
 				}
 			}
 		}.start();
@@ -78,6 +88,8 @@ public class EmbedStatus {
 		}
 		textChannel.sendMessageEmbeds(embed().build()).queue(msg -> {
 			config.set("embedMessageID", msg.getId());
+			plugin.saveConfig();
+			plugin.reloadConfig();
 		});
 	}
 
@@ -89,20 +101,18 @@ public class EmbedStatus {
 		EmbedBuilder e = new EmbedBuilder();
 
 		e.setTitle("Online");
-
-		e.addField("Server IP", Bukkit.getIp(), true);
-		e.addField("Player Count", Integer.toString(Bukkit.getOnlinePlayers().size()), true);
-		e.addField("RAM",
-				"Free: " + Runtime.getRuntime().freeMemory() / 1024L / 1024L + "("
-						+ (Runtime.getRuntime().maxMemory() - Runtime.getRuntime().freeMemory() / 1024L / 1024L)
-						+ "mb / " + String.valueOf(Runtime.getRuntime().maxMemory() / 1024L / 1024L) + " mb)",
-				false);
-		e.addField("Uptime", String.valueOf(System.currentTimeMillis() - Status4Discord.startUp), true);
-		e.addField("TPS", String.valueOf(Math.round(Bukkit.getServer().getTPS()[0] * 10.0) / 10.0), true);
-		e.addField("CPU", String.valueOf(Placeholders.getCPU()), false);
-		e.addField("Players", Bukkit.getOnlinePlayers().toString(), true);
-
 		e.setColor(Color.GREEN);
+
+		e.addField("Server IP", addFormat(Placeholders.getServerIP()), true);
+		e.addField("Player Count", addFormat(Placeholders.getOnlinePlayers() + " / " + Placeholders.getMaxPlayers()),
+				true);
+		e.addField("RAM", addFormat("Used: " + Placeholders.getUsedMemoryPercentage() + " % ("
+				+ Placeholders.getUsedMemory() + " mb / " + Placeholders.getMaxMemory() + " mb)"), false);
+		e.addField("Uptime", addFormat(Placeholders.getUptime()), true);
+		e.addField("TPS", addFormat(String.valueOf(Placeholders.getTPS(0))), true);
+		e.addField("CPU", addFormat(Placeholders.getCPU() + " %"), true);
+
+		e.setTimestamp(Instant.now());
 		return e;
 	}
 
@@ -111,7 +121,22 @@ public class EmbedStatus {
 	}
 
 	public void stop() {
+
 		updateEmbed = false;
+
+		EmbedBuilder e = new EmbedBuilder();
+		e.setTitle("Offline");
+		e.setColor(Color.RED);
+
+		e.addField("Server IP", addFormat(Placeholders.getServerIP()), true);
+
+		e.setTimestamp(Instant.now());
+
+		update(e);
+	}
+
+	private String addFormat(String string) {
+		return "`" + string + "`";
 	}
 
 }

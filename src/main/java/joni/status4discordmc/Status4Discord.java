@@ -9,20 +9,23 @@ public class Status4Discord extends JavaPlugin {
 
 	static boolean papi;
 	public static long startUp;
+	public static Status4Discord instance;
 
 	private static Discord discord;
 
 	@Override
 	public void onLoad() {
 		startUp = System.currentTimeMillis();
-		discord = new Discord(this, getConfig());
-		discord.start();
 	}
 
 	@Override
 	public void onEnable() {
+		instance = this;
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
 			papi = true;
+		saveDefaultConfig();
+		discord = new Discord(this, getConfig());
+		discord.start();
 	}
 
 	@Override
@@ -32,6 +35,10 @@ public class Status4Discord extends JavaPlugin {
 
 	public static Discord getDiscord() {
 		return discord;
+	}
+
+	public static Status4Discord getInstance() {
+		return instance;
 	}
 
 }
