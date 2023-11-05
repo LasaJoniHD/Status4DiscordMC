@@ -6,6 +6,7 @@ token: "***REMOVED***"
 
 embed:
   enabled: true
+  serverIP: "server.properties"
   textChannelID: "1159154870704676905"
 
 embedMessageID: "0"
