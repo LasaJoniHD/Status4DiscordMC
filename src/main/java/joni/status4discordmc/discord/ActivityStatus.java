@@ -2,6 +2,8 @@ package joni.status4discordmc.discord;
 
 import java.util.logging.Logger;
 
+import org.bukkit.configuration.file.FileConfiguration;
+
 import joni.status4discordmc.Placeholders;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -12,10 +14,12 @@ public class ActivityStatus {
 	private JDA jda;
 	private Logger logger;
 	private boolean updateActivity;
+	private FileConfiguration config;
 
-	public ActivityStatus(JDA jda, Logger logger) {
+	public ActivityStatus(JDA jda, Logger logger, FileConfiguration config) {
 		this.jda = jda;
 		this.logger = logger;
+		this.config = config;
 	}
 
 	public void start() {
@@ -25,14 +29,13 @@ public class ActivityStatus {
 				jda.getPresence().setStatus(OnlineStatus.ONLINE);
 
 				try {
-					sleep(3000);
+					sleep(5000);
 				} catch (InterruptedException e) {
 					logger.fine("Updating the activity has failed! The Thread Interrupted!");
 				}
 
 				while (updateActivity) {
-					jda.getPresence().setActivity(Activity
-							.playing(Placeholders.set("uptime: %server_uptime% | %cpu_system% | %server_version%")));
+					jda.getPresence().setActivity(Activity.playing(Placeholders.set(config.getString("activity"))));
 					try {
 						sleep(45000);
 					} catch (InterruptedException e) {

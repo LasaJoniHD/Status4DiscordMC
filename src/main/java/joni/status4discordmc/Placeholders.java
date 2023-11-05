@@ -13,11 +13,11 @@ public class Placeholders {
 	final static Server s = Bukkit.getServer();
 
 	private static String replace(String msg) {
-		msg = msg.replaceAll("%tps_1m%", String.valueOf(getTPS(0)));
-		msg = msg.replaceAll("%tps_5m%", String.valueOf(getTPS(1)));
-		msg = msg.replaceAll("%tps_15m%", String.valueOf(getTPS(2)));
+		msg = msg.replaceAll("%tps%", String.valueOf(getTPS(0)));
+		msg = msg.replaceAll("%tps_5%", String.valueOf(getTPS(1)));
+		msg = msg.replaceAll("%tps_15%", String.valueOf(getTPS(2)));
 		msg = msg.replaceAll("%online_players%", s.getOnlinePlayers().size() + "");
-		msg = msg.replaceAll("$max_players%", s.getMaxPlayers() + "");
+		msg = msg.replaceAll("%max_players%", s.getMaxPlayers() + "");
 		msg = msg.replaceAll("%cpu_system%", String.valueOf(getCPU()));
 		msg = msg.replaceAll("%freeram%", String.valueOf(Runtime.getRuntime().freeMemory() / 1024L / 1024L));
 		msg = msg.replaceAll("%usedram%",

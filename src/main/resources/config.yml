@@ -1,0 +1,13 @@
+logs:
+  enabled: true
+  textChannelID: "1159154848508432414"
+
+token: "***REMOVED***"
+
+embed:
+  enabled: true
+  textChannelID: "1159154870704676905"
+
+embedMessageID: "0"
+
+activity: "%online_players% / %max_players% | %tps% TPS"
