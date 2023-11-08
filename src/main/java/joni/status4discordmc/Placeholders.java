@@ -50,9 +50,9 @@ public class Placeholders {
 		return 0;
 	}
 
+	@SuppressWarnings({ "resource", "deprecation" })
 	public static double getTPS(int m) {
-		MinecraftServer nms = (MinecraftServer) Bukkit.getServer();
-		return Math.round(nms.recentTps[m] * 10.0) / 10.0;
+		return Math.round(MinecraftServer.getServer().recentTps[m] * 10.0) / 10.0;
 	}
 
 	public static int getOnlinePlayers() {
