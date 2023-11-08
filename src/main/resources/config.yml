@@ -1,14 +1,56 @@
+#   _____ _        _             _  _   __  __  _____
+#  / ____| |      | |           | || | |  \/  |/ ____|
+# | (___ | |_ __ _| |_ _   _ ___| || |_| \  / | |
+#  \___ \| __/ _` | __| | | / __|__   _| |\/| | |
+#  ____) | || (_| | |_| |_| \__ \  | | | |  | | |____
+# |_____/ \__\__,_|\__|\__,_|___/  |_| |_|  |_|\_____|
+#
+# Thank you for using Status4MC by Joni
+# To setup Status4MC please visit
+
+#   _____ ___  _  _____ _  _
+# |_   _/ _ \| |/ / __| \| |
+#   | || (_) | ' <| _|| .` |
+#   |_| \___/|_|\_\___|_|\_|
+#
+# Please paste your discord bot token here
+token: "ODE5OTc0NDMwOTA2MjUzMzEz.GXqzcC.NAm9D2lrV_-EaQ5q9D3R3NgQhqHxFwWJtLaRFw"
+
+#    _   ___ _____ _____   _____ _______   __
+#   /_\ / __|_   _|_ _\ \ / /_ _|_   _\ \ / /
+#  / _ \ (__  | |  | | \ V / | |  | |  \ V /
+# /_/ \_\___| |_| |___| \_/ |___| |_|   |_|
+#
+# Avaible Activites:
+# PLAYING, WATCHING, LISTENING, CUSTOM_STATUS, COMPETING
+# You can use PlaceholderAPI if installed and the placeholder does not reqiure a player
+# Find more placeholders which are included under
+activity: "PLAYING %online_players% / %max_players% Players"
+
+#  _    ___   ___ ___
+# | |  / _ \ / __/ __|
+# | |_| (_) | (_ \__ \
+# |____\___/ \___|___/
+#
+# If enabled, the bot will send a message when the server starts / stops in the specified logs channel
+# If you don't know how to optain the textChannelID, and you have admin privileges, simply send in discord in the channel a messages like this
+# @MentionYourDiscordBot setlogs
 logs:
   enabled: true
   textChannelID: "1159154848508432414"
 
-token: "ODE5OTc0NDMwOTA2MjUzMzEz.GXqzcC.NAm9D2lrV_-EaQ5q9D3R3NgQhqHxFwWJtLaRFw"
-
+#  ___ __  __ ___ ___ ___
+# | __|  \/  | _ ) __|   \
+# | _|| |\/| | _ \ _|| |) |
+# |___|_|  |_|___/___|___/
+#
+# If enabled, the bot will send a status embed in the specified channel, this embed will be updated every few seconds
+# If you don't know how to obtain the textChannelID, and you have admin privileges, simply send in discord in the channel a messages like this
+# @MentionYourDiscordBot setembed
 embed:
   enabled: true
   serverIP: "server.properties"
   textChannelID: "1159154870704676905"
 
+# Do not touch if you don't know what this setting does
 embedMessageID: "0"
-
-activity: "%online_players% / %max_players% | %tps% TPS"

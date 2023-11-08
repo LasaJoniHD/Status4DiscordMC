@@ -9,6 +9,7 @@ import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import net.minecraft.server.MinecraftServer;
 
 public class Placeholders {
 
@@ -50,7 +51,8 @@ public class Placeholders {
 	}
 
 	public static double getTPS(int m) {
-		return Math.round(s.getTPS()[m] * 10.0) / 10.0;
+		MinecraftServer nms = (MinecraftServer) Bukkit.getServer();
+		return Math.round(nms.recentTps[m] * 10.0) / 10.0;
 	}
 
 	public static int getOnlinePlayers() {

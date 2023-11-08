@@ -2,7 +2,10 @@ main: joni.status4discordmc.Status4Discord
 name: Status4Discord
 version: 1.0
 author: LasaJoni
-api-version: 1.17
+api-version: 1.18
 load: STARTUP
-description: Insane status!
+description: A discord bot, showing the current status of your server as embed, activity and more.
 softdepend: [PlaceholderAPI]
+
+commands:
+  status4mc:

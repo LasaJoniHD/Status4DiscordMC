@@ -23,7 +23,15 @@ public class Logs {
 	}
 
 	public void sendMessangeToLogAsEmbed(String msg, Color c) {
-		TextChannel textChannel = bot.getTextChannelById(config.getString("logs.textChannelID"));
+
+		String id = config.getString("logs.textChannelID");
+
+		if (id.equals("0")) {
+			logger.fine("Logs is not setup, please set the textChannelID or disable logs!");
+			return;
+		}
+
+		TextChannel textChannel = bot.getTextChannelById(id);
 		if (textChannel.canTalk()) {
 			EmbedBuilder embed = new EmbedBuilder();
 			embed.setDescription(msg);

@@ -1,5 +1,6 @@
 package joni.status4discordmc;
 
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -26,6 +27,11 @@ public class Status4Discord extends JavaPlugin {
 		saveDefaultConfig();
 		discord = new Discord(this, getConfig());
 		discord.start();
+
+		int pluginId = 20241;
+		new Metrics(this, pluginId);
+
+		getCommand("status4mc").setExecutor(new Commands(discord));
 	}
 
 	@Override

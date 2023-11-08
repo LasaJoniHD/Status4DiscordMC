@@ -33,7 +33,14 @@ public class EmbedStatus {
 		if (!isEnabled())
 			return;
 
-		TextChannel textChannel = bot.getTextChannelById(config.getString("embed.textChannelID"));
+		String id = config.getString("embed.textChannelID");
+
+		if (id.equals("0")) {
+			logger.fine("Embed is not setup, please set the textChannelID or disable embed!");
+			return;
+		}
+
+		TextChannel textChannel = bot.getTextChannelById(id);
 		setup(textChannel);
 
 	}
