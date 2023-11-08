@@ -8,6 +8,7 @@ import joni.status4discordmc.Placeholders;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Activity.ActivityType;
 
 public class ActivityStatus {
 
@@ -36,7 +37,13 @@ public class ActivityStatus {
 				jda.getPresence().setStatus(OnlineStatus.ONLINE);
 
 				while (updateActivity) {
-					jda.getPresence().setActivity(Activity.playing(Placeholders.set(config.getString("activity"))));
+					String[] activity = Placeholders.set(config.getString("activity")).split(" ", 2);
+					try {
+						jda.getPresence().setActivity(Activity.of(ActivityType.valueOf(activity[0]), activity[1]));
+					} catch (IllegalArgumentException e) {
+						logger.finer("The ActivityType " + activity[0] + " is invalid! Check your config!");
+						jda.getPresence().setActivity(Activity.playing(activity[1]));
+					}
 					try {
 						sleep(45000);
 					} catch (InterruptedException e) {
