@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import joni.status4discordmc.discord.Discord;
+import net.md_5.bungee.api.ChatColor;
 
 public class Commands implements CommandExecutor {
 
@@ -21,12 +22,13 @@ public class Commands implements CommandExecutor {
 			return false;
 
 		if (args[0].equals("restart")) {
-			s.sendMessage("§f[§9Status§f4§9Discord§f] §6The Discord bot will be restarted!");
+			s.sendMessage(ChatColor.translateAlternateColorCodes('&',
+					"&f[&9Status&f4&9Discord&f] &6The Discord bot will be restarted!"));
 			try {
 				discord.stop();
 				discord.start();
 			} catch (Exception e) {
-				s.sendMessage("§cSomething went wrong!");
+				s.sendMessage(ChatColor.RED + "Something went wrong!");
 				e.printStackTrace();
 			}
 		}

@@ -40,7 +40,7 @@ public class Discord {
 
 		plugin.getLogger().info("Logged in as " + bot.getSelfUser().getName());
 
-		bot.addEventListener(new Commands(plugin, config));
+		bot.addEventListener(new Commands(plugin, plugin.getLogger(), config));
 
 		createModules();
 		startModules();
