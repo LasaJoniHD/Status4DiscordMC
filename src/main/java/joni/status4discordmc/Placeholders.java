@@ -75,16 +75,15 @@ public class Placeholders {
 	}
 
 	public static String getUsedMemory() {
-		long usedMemory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024L * 1024L);
+		long usedMemory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024L / 1024L;
 		return String.valueOf(usedMemory);
 	}
 
 	public static String getUsedMemoryPercentage() {
-		long totalMemory = Runtime.getRuntime().totalMemory();
-		long freeMemory = Runtime.getRuntime().freeMemory();
-		long usedMemory = totalMemory - freeMemory;
-		double usedMemoryPercentage = (double) usedMemory / totalMemory * 100.0;
-		return Double.toString(usedMemoryPercentage);
+		long totalMemory = Runtime.getRuntime().maxMemory() / 1024L / 1024L;
+		long usedMemory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024L / 1024L;
+		double usedMemoryPercentage = (double) (usedMemory * 100) / totalMemory;
+		return Double.toString(Math.round(usedMemoryPercentage));
 	}
 
 	public static String getMaxMemory() {

@@ -25,13 +25,14 @@ public class Status4Discord extends JavaPlugin {
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
 			papi = true;
 		saveDefaultConfig();
+
 		discord = new Discord(this, getConfig());
 		discord.start();
 
 		int pluginId = 20241;
 		new Metrics(this, pluginId);
 
-		getCommand("status4mc").setExecutor(new Commands(discord));
+		getCommand("status4mc").setExecutor(new Commands(discord, this));
 	}
 
 	@Override

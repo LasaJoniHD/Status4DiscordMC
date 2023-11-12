@@ -14,7 +14,7 @@
 #   |_| \___/|_|\_\___|_|\_|
 #
 # Please paste your discord bot token here
-token: "ODE5OTc0NDMwOTA2MjUzMzEz.GXqzcC.NAm9D2lrV_-EaQ5q9D3R3NgQhqHxFwWJtLaRFw"
+token: ""
 
 #    _   ___ _____ _____   _____ _______   __
 #   /_\ / __|_   _|_ _\ \ / /_ _|_   _\ \ / /
@@ -37,7 +37,7 @@ activity: "PLAYING %online_players% / %max_players% Players"
 # @MentionYourDiscordBot setlogs
 logs:
   enabled: true
-  textChannelID: "1159154848508432414"
+  textChannelID: "0"
 
 #  ___ __  __ ___ ___ ___
 # | __|  \/  | _ ) __|   \
@@ -50,7 +50,7 @@ logs:
 embed:
   enabled: true
   serverIP: "server.properties"
-  textChannelID: "1159154870704676905"
+  textChannelID: "0"
 
 # Do not touch if you don't know what this setting does
 embedMessageID: "0"

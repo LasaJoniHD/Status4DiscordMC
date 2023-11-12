@@ -26,7 +26,15 @@ public class Discord {
 	}
 
 	public void start() {
-		JDABuilder builder = JDABuilder.createDefault(config.getString("token"));
+
+		String token = config.getString("token");
+
+		if (token.equals("")) {
+			plugin.getLogger().warning("Please setup Status4Discord and restart/reload the server!");
+			return;
+		}
+
+		JDABuilder builder = JDABuilder.createDefault(token);
 		builder.setActivity(Activity.customStatus("Server is starting..."));
 		builder.setStatus(OnlineStatus.IDLE);
 
@@ -41,6 +49,8 @@ public class Discord {
 		plugin.getLogger().info("Logged in as " + bot.getSelfUser().getName());
 
 		bot.addEventListener(new Commands(plugin, plugin.getLogger(), config));
+
+		plugin.reloadConfig();
 
 		createModules();
 		startModules();

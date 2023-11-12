@@ -41,13 +41,13 @@ public class ActivityStatus {
 					try {
 						jda.getPresence().setActivity(Activity.of(ActivityType.valueOf(activity[0]), activity[1]));
 					} catch (IllegalArgumentException e) {
-						logger.finer("The ActivityType " + activity[0] + " is invalid! Check your config!");
+						logger.severe("The ActivityType " + activity[0] + " is invalid! Check your config!");
 						jda.getPresence().setActivity(Activity.playing(activity[1]));
 					}
 					try {
 						sleep(45000);
 					} catch (InterruptedException e) {
-						logger.fine("Updating the activity has failed! The Thread Interrupted!");
+						logger.severe("Updating the activity has failed! The Thread Interrupted!");
 					}
 				}
 
