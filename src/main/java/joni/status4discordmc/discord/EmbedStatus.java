@@ -36,7 +36,7 @@ public class EmbedStatus {
 		String id = config.getString("embed.textChannelID");
 
 		if (id.equals("0")) {
-			logger.fine("Embed is not setup, please set the textChannelID or disable embed!");
+			logger.severe("Embed is not setup, please set the textChannelID or disable embed!");
 			return;
 		}
 
@@ -71,15 +71,15 @@ public class EmbedStatus {
 					try {
 						sleep(10000);
 					} catch (InterruptedException e) {
-						logger.fine("Updating the Embed failed! Thread interrupted!");
+						logger.severe("Updating the Embed failed! Thread interrupted!");
 					}
 					String embedMessageID = config.getString("embedMessageID");
 					if (embedMessageID.equals("0")) {
-						send(textChannel);
+						send(bot.getTextChannelById(config.getString("embed.textChannelID")));
 						try {
 							sleep(30000);
 						} catch (InterruptedException e) {
-							logger.fine("Updating the Embed failed! Thread interrupted!");
+							logger.severe("Updating the Embed failed! Thread interrupted!");
 						}
 					}
 					if (updateEmbed)
@@ -91,7 +91,7 @@ public class EmbedStatus {
 
 	private void send(TextChannel textChannel) {
 		if (!textChannel.canTalk()) {
-			logger.fine("Bot can't talk in specified channel!");
+			logger.severe("Bot can't talk in specified channel!");
 		}
 		textChannel.sendMessageEmbeds(embed().build()).queue(msg -> {
 			config.set("embedMessageID", msg.getId());

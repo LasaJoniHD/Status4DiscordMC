@@ -27,7 +27,7 @@ public class Logs {
 		String id = config.getString("logs.textChannelID");
 
 		if (id.equals("0")) {
-			logger.fine("Logs is not setup, please set the textChannelID or disable logs!");
+			logger.severe("Logs is not setup, please set the textChannelID or disable logs!");
 			return;
 		}
 
@@ -39,7 +39,7 @@ public class Logs {
 			embed.setTimestamp(Instant.now());
 			textChannel.sendMessageEmbeds(embed.build()).queue();
 		} else {
-			logger.fine("The bot cannot talk in this channel, check your permissions!");
+			logger.severe("The bot cannot talk in this channel, check your permissions!");
 		}
 	}
 

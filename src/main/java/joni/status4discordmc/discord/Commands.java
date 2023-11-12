@@ -24,7 +24,7 @@ public class Commands extends ListenerAdapter {
 	@Override
 	public void onMessageReceived(MessageReceivedEvent e) {
 		String raw = e.getMessage().getContentRaw();
-		if (!raw.startsWith("@<" + e.getJDA().getSelfUser().getId() + ">"))
+		if (!raw.startsWith("<@" + e.getJDA().getSelfUser().getId() + ">"))
 			return;
 
 		if (!e.getMember().hasPermission(net.dv8tion.jda.api.Permission.ADMINISTRATOR))
@@ -46,8 +46,9 @@ public class Commands extends ListenerAdapter {
 			config.set("logs.textChannelID", e.getChannel().getId());
 			plugin.saveConfig();
 			plugin.reloadConfig();
-			e.getMessage().addReaction(Emoji.fromUnicode("U+2705")).queue();
-			deleteMessage(e);
+			e.getMessage().addReaction(Emoji.fromUnicode("U+2705")).queue(msg -> {
+				deleteMessage(e);
+			});
 			return;
 		}
 	}
@@ -58,11 +59,11 @@ public class Commands extends ListenerAdapter {
 				try {
 					sleep(500);
 				} catch (InterruptedException e) {
-					logger.fine("The Thread Interrupted!");
+					logger.severe("The Thread Interrupted!");
 					e.printStackTrace();
 				}
 
-				e.getMessage().delete();
+				e.getMessage().delete().queue();
 
 			}
 		}.start();
