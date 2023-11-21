@@ -2,6 +2,7 @@ package joni.status4discordmc.discord;
 
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -43,12 +44,14 @@ public class Discord {
 			bot = builder.build();
 		} catch (InvalidTokenException e) {
 			plugin.getLogger().severe("Invalid Token Exception: The provided token is invalid!");
+			Bukkit.getPluginManager().disablePlugin(plugin);
 		}
 
 		try {
 			bot.awaitReady();
 		} catch (InterruptedException e) {
 			plugin.getLogger().severe("JDA could not initialize!");
+			return;
 		}
 
 		plugin.getLogger().info("Logged in as " + bot.getSelfUser().getName());
