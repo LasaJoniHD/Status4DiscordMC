@@ -11,6 +11,6 @@ commands:
   status4discord:
 
 permissions:
-  status4mc.admin:
+  status4discord.admin:
     description: Use /status4discord reload and /status4discord restart
     default: op

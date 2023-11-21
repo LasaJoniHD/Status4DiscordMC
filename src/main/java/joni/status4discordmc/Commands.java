@@ -26,7 +26,7 @@ public class Commands implements CommandExecutor {
 			sendPluginInfo(s);
 		}
 
-		if (!s.hasPermission("status4mc.admin"))
+		if (!s.hasPermission("status4discord.admin"))
 			return false;
 
 		if (args[0].equals("restart")) {
