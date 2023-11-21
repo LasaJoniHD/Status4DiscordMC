@@ -30,4 +30,5 @@ java {
 }
 shadowJar {
    relocate "org.bstats", "joni.bstats"
+   relocate "net.dv8tion.jda", "joni.jda"
 }
