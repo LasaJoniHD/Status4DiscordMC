@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 
 public class Discord {
 
@@ -38,12 +39,16 @@ public class Discord {
 		builder.setActivity(Activity.customStatus("Server is starting..."));
 		builder.setStatus(OnlineStatus.IDLE);
 
-		bot = builder.build();
+		try {
+			bot = builder.build();
+		} catch (InvalidTokenException e) {
+			plugin.getLogger().severe("Invalid Token Exception: The provided token is invalid!");
+		}
 
 		try {
 			bot.awaitReady();
 		} catch (InterruptedException e) {
-			plugin.getLogger().fine("JDA could not initialize!");
+			plugin.getLogger().severe("JDA could not initialize!");
 		}
 
 		plugin.getLogger().info("Logged in as " + bot.getSelfUser().getName());

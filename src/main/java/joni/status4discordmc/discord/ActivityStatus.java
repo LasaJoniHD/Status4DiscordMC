@@ -31,7 +31,7 @@ public class ActivityStatus {
 				try {
 					sleep(5000);
 				} catch (InterruptedException e) {
-					logger.fine("Updating the activity has failed! The Thread Interrupted!");
+					logger.severe("Updating the activity has failed! The Thread Interrupted!");
 				}
 
 				jda.getPresence().setStatus(OnlineStatus.ONLINE);
