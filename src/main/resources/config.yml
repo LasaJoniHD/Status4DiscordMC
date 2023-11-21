@@ -1,12 +1,12 @@
-#   _____ _        _             _  _   __  __  _____
-#  / ____| |      | |           | || | |  \/  |/ ____|
-# | (___ | |_ __ _| |_ _   _ ___| || |_| \  / | |
-#  \___ \| __/ _` | __| | | / __|__   _| |\/| | |
-#  ____) | || (_| | |_| |_| \__ \  | | | |  | | |____
-# |_____/ \__\__,_|\__|\__,_|___/  |_| |_|  |_|\_____|
+#   _____ _        _             _  _   _____  _                       _
+#  / ____| |      | |           | || | |  __ \(_)                     | |
+# | (___ | |_ __ _| |_ _   _ ___| || |_| |  | |_ ___  ___ ___  _ __ __| |
+#  \___ \| __/ _` | __| | | / __|__   _| |  | | / __|/ __/ _ \| '__/ _` |
+#  ____) | || (_| | |_| |_| \__ \  | | | |__| | \__ \ (_| (_) | | | (_| |
+# |_____/ \__\__,_|\__|\__,_|___/  |_| |_____/|_|___/\___\___/|_|  \__,_|
 #
-# Thank you for using Status4MC by Joni
-# To setup Status4MC please visit
+# Thank you for using Status4Discord by Joni
+# To setup Status4Discord, please visit https://github.com/LasaJoniHD/Status4DiscordMC/wiki/Setup
 
 #   _____ ___  _  _____ _  _
 # |_   _/ _ \| |/ / __| \| |
@@ -23,8 +23,8 @@ token: ""
 #
 # Avaible Activites:
 # PLAYING, WATCHING, LISTENING, CUSTOM_STATUS, COMPETING
-# You can use PlaceholderAPI if installed and the placeholder does not reqiure a player
-# Find more placeholders which are included under
+# You can use PlaceholderAPI if installed (only placeholders that do not require a player).
+# Find placeholders included in Status4Discord at https://github.com/LasaJoniHD/Status4DiscordMC/wiki/Placeholders.
 activity: "PLAYING %online_players% / %max_players% Players"
 
 #  _    ___   ___ ___
@@ -32,9 +32,9 @@ activity: "PLAYING %online_players% / %max_players% Players"
 # | |_| (_) | (_ \__ \
 # |____\___/ \___|___/
 #
-# If enabled, the bot will send a message when the server starts / stops in the specified logs channel
-# If you don't know how to optain the textChannelID, and you have admin privileges, simply send in discord in the channel a messages like this
-# @MentionYourDiscordBot setlogs
+# If enabled, the bot will send a message when the server starts/stops in the specified logs channel.
+# If you don't know how to obtain the textChannelID and have admin privileges,
+# simply send a message in Discord in the channel like this: @MentionYourDiscordBot setlogs.
 logs:
   enabled: true
   textChannelID: "0"
@@ -44,9 +44,13 @@ logs:
 # | _|| |\/| | _ \ _|| |) |
 # |___|_|  |_|___/___|___/
 #
-# If enabled, the bot will send a status embed in the specified channel, this embed will be updated every few seconds
-# If you don't know how to obtain the textChannelID, and you have admin privileges, simply send in discord in the channel a messages like this
-# @MentionYourDiscordBot setembed
+# If enabled, the bot will send a status embed in the specified channel; this embed will be updated every few seconds.
+# If you don't know how to obtain the textChannelID and have admin privileges,
+# simply send a message in Discord in the channel like this:
+# @MentionYourDiscordBot setembed.
+# --------------------------------------------------------------------------------------------------------------------
+# 'serverIP' sets the server IP shown in activity and in the embed.
+# If in server.properties, it will obtain the IP that the server is bound to; if not set, it will display "not set."
 embed:
   enabled: true
   serverIP: "server.properties"

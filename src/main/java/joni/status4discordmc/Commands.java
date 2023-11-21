@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import joni.lib.ColorTranslator;
 import joni.status4discordmc.discord.Discord;
 import net.md_5.bungee.api.ChatColor;
 
@@ -21,34 +22,52 @@ public class Commands implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender s, Command cmd, String label, String[] args) {
 
-		if (!s.hasPermission("status4mc.admin") || !s.isOp())
+		if (args.length == 0 || args[0].equals("info")) {
+			sendPluginInfo(s);
+		}
+
+		if (!s.hasPermission("status4mc.admin"))
 			return false;
 
 		if (args[0].equals("restart")) {
-			s.sendMessage(ChatColor.translateAlternateColorCodes('&',
-					"&f[&9Status&f4&9Discord&f] &6The Discord bot will be restarted!"));
-			try {
-				discord.stop();
-				plugin.reloadConfig();
-				discord.start();
-			} catch (Exception e) {
-				s.sendMessage(ChatColor.RED + "Something went wrong!");
-				e.printStackTrace();
-			}
+			doRestart(s);
+			return false;
 		}
 
 		if (args[0].equals("reload")) {
-			s.sendMessage(
-					ChatColor.translateAlternateColorCodes('&', "&f[&9Status&f4&9Discord&f] &6Status4MC reloaded!"));
-			try {
-				plugin.reloadConfig();
-			} catch (Exception e) {
-				s.sendMessage(ChatColor.RED + "Something went wrong!");
-				e.printStackTrace();
-			}
+			doReload(s);
+			return false;
 		}
 
 		return false;
+	}
+
+	private void sendPluginInfo(CommandSender s) {
+		s.sendMessage(ColorTranslator.translateColor("&f[&9Status&f4&9Discord&f] &6by Joni &9/help"));
+	}
+
+	private void doReload(CommandSender s) {
+		s.sendMessage(ColorTranslator.translateColor("&f[&9Status&f4&9Discord&f] &6Status4Discord reloaded!"));
+		try {
+			plugin.reloadConfig();
+		} catch (Exception e) {
+			s.sendMessage(ChatColor.RED + "Something went wrong!");
+			e.printStackTrace();
+		}
+
+	}
+
+	private void doRestart(CommandSender s) {
+		s.sendMessage(
+				ColorTranslator.translateColor("&f[&9Status&f4&9Discord&f] &6The Discord bot will be restarted!"));
+		try {
+			discord.stop();
+			plugin.reloadConfig();
+			discord.start();
+		} catch (Exception e) {
+			s.sendMessage(ChatColor.RED + "Something went wrong!");
+			e.printStackTrace();
+		}
 	}
 
 }

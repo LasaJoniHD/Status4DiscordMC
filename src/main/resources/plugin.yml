@@ -8,4 +8,9 @@ description: A discord bot, showing the current status of your server as embed, 
 softdepend: [PlaceholderAPI]
 
 commands:
-  status4mc:
+  status4discord:
+
+permissions:
+  status4mc.admin:
+    description: Use /status4discord reload and /status4discord restart
+    default: op
