@@ -45,6 +45,7 @@ public class Discord {
 		} catch (InvalidTokenException e) {
 			plugin.getLogger().severe("Invalid Token Exception: The provided token is invalid!");
 			Bukkit.getPluginManager().disablePlugin(plugin);
+			return;
 		}
 
 		try {
