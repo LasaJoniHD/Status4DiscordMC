@@ -50,6 +50,7 @@ public class Commands implements CommandExecutor {
 		s.sendMessage(ColorTranslator.translateColor("&f[&9Status&f4&9Discord&f] &6Status4Discord reloaded!"));
 		try {
 			plugin.reloadConfig();
+			Status4Discord.getDiscord().setFileConfiguration(plugin.getConfig());
 		} catch (Exception e) {
 			s.sendMessage(ChatColor.RED + "Something went wrong!");
 			e.printStackTrace();

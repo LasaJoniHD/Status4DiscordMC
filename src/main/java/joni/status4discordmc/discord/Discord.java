@@ -104,6 +104,12 @@ public class Discord {
 		return logs;
 	}
 
+	public void setFileConfiguration(FileConfiguration conf) {
+		if (conf == null)
+			return;
+		config = conf;
+	}
+
 	public void stop() {
 		if (bot == null)
 			return;
