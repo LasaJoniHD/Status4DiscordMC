@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 
@@ -59,7 +60,10 @@ public class Discord {
 
 		bot.addEventListener(new Commands(plugin, plugin.getLogger(), config));
 
-		plugin.reloadConfig();
+		if (!isInGuilds()) {
+			plugin.getLogger().info("The Discord bot is not on any guild! Maybe you would like to invite him:");
+			plugin.getLogger().info(getInvitationLink());
+		}
 
 		createModules();
 		startModules();
@@ -118,6 +122,25 @@ public class Discord {
 
 		bot.shutdown();
 
+	}
+
+	public Boolean isInGuilds() {
+		if (bot == null)
+			return null;
+
+		if (bot.getGuilds().size() > 0)
+			return true;
+
+		return false;
+	}
+
+	public String getInvitationLink() {
+		if (bot == null)
+			return null;
+
+		return bot.getInviteUrl(Permission.MESSAGE_SEND, Permission.VIEW_CHANNEL, Permission.MESSAGE_MANAGE,
+				Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_HISTORY,
+				Permission.MESSAGE_ADD_REACTION);
 	}
 
 }

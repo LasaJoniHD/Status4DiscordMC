@@ -39,6 +39,11 @@ public class Commands implements CommandExecutor {
 			return false;
 		}
 
+		if (args[0].equals("recrea")) {
+			doReload(s);
+			return false;
+		}
+
 		return false;
 	}
 

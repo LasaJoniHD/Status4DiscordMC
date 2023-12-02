@@ -47,7 +47,8 @@ public class Status4Discord extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		discord.stop();
+		if (discord != null)
+			discord.stop();
 	}
 
 	public static Discord getDiscord() {
