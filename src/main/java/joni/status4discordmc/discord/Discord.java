@@ -61,7 +61,7 @@ public class Discord {
 		bot.addEventListener(new Commands(plugin, plugin.getLogger(), config));
 
 		if (!isInGuilds()) {
-			plugin.getLogger().info("The Discord bot is not on any guild! Maybe you would like to invite him:");
+			plugin.getLogger().severe("The Discord bot is not on any guild! Maybe you would like to invite him:");
 			plugin.getLogger().info(getInvitationLink());
 		}
 

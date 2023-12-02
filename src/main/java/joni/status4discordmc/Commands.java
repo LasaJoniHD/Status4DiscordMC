@@ -39,8 +39,8 @@ public class Commands implements CommandExecutor {
 			return false;
 		}
 
-		if (args[0].equals("recrea")) {
-			doReload(s);
+		if (args[0].equals("invite")) {
+			doInvite(s);
 			return false;
 		}
 
@@ -74,6 +74,10 @@ public class Commands implements CommandExecutor {
 			s.sendMessage(ChatColor.RED + "Something went wrong!");
 			e.printStackTrace();
 		}
+	}
+
+	private void doInvite(CommandSender s) {
+		s.sendMessage(ColorTranslator.translateColor("&f[&9Status&f4&9Discord&f] &6") + discord.getInvitationLink());
 	}
 
 }

@@ -37,8 +37,9 @@ public class Commands extends ListenerAdapter {
 			config.set("embedMessageID", "0");
 			plugin.saveConfig();
 			plugin.reloadConfig();
-			e.getMessage().addReaction(Emoji.fromUnicode("U+2705")).queue();
-			deleteMessage(e);
+			e.getMessage().addReaction(Emoji.fromUnicode("U+2705")).queue(msg -> {
+				deleteMessage(e);
+			});
 			return;
 		}
 
