@@ -26,20 +26,26 @@ public class Logs {
 
 		String id = config.getString("logs.textChannelID");
 
-		if (id.equals("0")) {
-			logger.severe("Logs is not setup, please set the textChannelID or disable logs!");
-			return;
-		}
+		try {
+			TextChannel textChannel = bot.getTextChannelById(id);
+			if (textChannel == null) {
+				logger.severe("Please provide an id for the log channel!");
+				return;
+			}
+			if (textChannel.canTalk()) {
+				EmbedBuilder embed = new EmbedBuilder();
+				embed.setDescription(msg);
+				embed.setColor(c);
+				embed.setTimestamp(Instant.now());
+				textChannel.sendMessageEmbeds(embed.build()).queue();
+			} else {
+				logger.severe("The bot cannot talk in this channel, check your permissions!");
+			}
 
-		TextChannel textChannel = bot.getTextChannelById(id);
-		if (textChannel.canTalk()) {
-			EmbedBuilder embed = new EmbedBuilder();
-			embed.setDescription(msg);
-			embed.setColor(c);
-			embed.setTimestamp(Instant.now());
-			textChannel.sendMessageEmbeds(embed.build()).queue();
-		} else {
-			logger.severe("The bot cannot talk in this channel, check your permissions!");
+		} catch (IllegalArgumentException e) {
+			logger.severe("IllegalArgumentException: ID is invalid!");
+			logger.severe("Check if logs is correct setup!");
+			return;
 		}
 	}
 

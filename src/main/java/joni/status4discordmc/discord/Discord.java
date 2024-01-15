@@ -2,10 +2,10 @@ package joni.status4discordmc.discord;
 
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import joni.lib.DebugLogger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -23,6 +23,8 @@ public class Discord {
 	private FileConfiguration config;
 	private JDA bot;
 
+	private DebugLogger dlog;
+
 	public Discord(JavaPlugin plugin, FileConfiguration config) {
 		this.plugin = plugin;
 		this.config = config;
@@ -30,12 +32,9 @@ public class Discord {
 
 	public void start() {
 
-		String token = config.getString("token");
+		dlog = new DebugLogger(plugin);
 
-		if (token.equals("")) {
-			plugin.getLogger().warning("Please setup Status4Discord and restart/reload the server!");
-			return;
-		}
+		String token = config.getString("token");
 
 		JDABuilder builder = JDABuilder.createDefault(token);
 		builder.setActivity(Activity.customStatus("Server is starting..."));
@@ -45,24 +44,36 @@ public class Discord {
 			bot = builder.build();
 		} catch (InvalidTokenException e) {
 			plugin.getLogger().severe("Invalid Token Exception: The provided token is invalid!");
-			Bukkit.getPluginManager().disablePlugin(plugin);
+			plugin.getLogger().severe("Please setup Status4Discord and provide a valid token!");
+			return;
+		} catch (IllegalArgumentException e) {
+			plugin.getLogger().severe("IllegalArgumentException: No Token was provided!");
+			plugin.getLogger().severe("Please setup Status4Discord and provide a token!");
 			return;
 		}
+
+		dlog.debug(token + " is valid");
 
 		try {
 			bot.awaitReady();
 		} catch (InterruptedException e) {
-			plugin.getLogger().severe("JDA could not initialize!");
+			plugin.getLogger().severe("InterruptedException: Bot could not initialize!");
 			return;
 		}
 
+		dlog.debug("Bot is ready");
+
 		plugin.getLogger().info("Logged in as " + bot.getSelfUser().getName());
 
-		bot.addEventListener(new Commands(plugin, plugin.getLogger(), config));
+		bot.addEventListener(new Commands(plugin, plugin.getLogger(), config, this));
+
+		dlog.debug("Commands event added");
 
 		if (!isInGuilds()) {
-			plugin.getLogger().severe("The Discord bot is not on any guild! Maybe you would like to invite him:");
-			plugin.getLogger().info(getInvitationLink());
+			dlog.debug("Bot is not in guilds");
+			plugin.getLogger().warning("The Discord bot is not on any guild! Maybe you would like to invite him:");
+			plugin.getLogger().warning(getInvitationLink());
+			dlog.debug("getInvitationLink");
 		}
 
 		createModules();

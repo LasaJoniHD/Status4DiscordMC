@@ -14,13 +14,13 @@ import joni.status4discordmc.discord.Discord;
 
 public class Status4Discord extends JavaPlugin {
 
-	static boolean papi;
-	public static long startUp;
-	public static Status4Discord instance;
+	boolean papi = false;
+	private long startUp;
+	private static Status4Discord instance;
 
 	private String ver = "1.0";
 
-	private static Discord discord;
+	private Discord discord;
 
 	@Override
 	public void onLoad() {
@@ -34,13 +34,13 @@ public class Status4Discord extends JavaPlugin {
 			papi = true;
 		saveDefaultConfig();
 
-		discord = new Discord(this, getConfig());
-		discord.start();
+		startDiscord();
 
 		int pluginId = 20241;
 		new Metrics(this, pluginId);
 
 		getCommand("status4discord").setExecutor(new Commands(discord, this));
+		getCommand("status4discord").setTabCompleter(new Commands(discord, this));
 
 		updateChecker();
 	}
@@ -51,12 +51,29 @@ public class Status4Discord extends JavaPlugin {
 			discord.stop();
 	}
 
-	public static Discord getDiscord() {
+	public Discord getDiscord() {
 		return discord;
+	}
+
+	public void startDiscord() {
+		discord = new Discord(this, getConfig());
+		discord.start();
 	}
 
 	public static Status4Discord getInstance() {
 		return instance;
+	}
+
+	public long getStartUp() {
+		return startUp;
+	}
+
+	public String getVersion() {
+		return ver;
+	}
+
+	public boolean getPapi() {
+		return papi;
 	}
 
 	private void updateChecker() {

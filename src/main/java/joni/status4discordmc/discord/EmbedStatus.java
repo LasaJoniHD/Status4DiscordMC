@@ -35,33 +35,56 @@ public class EmbedStatus {
 
 		String id = config.getString("embed.textChannelID");
 
-		if (id.equals("0")) {
-			logger.severe("Embed is not setup, please set the textChannelID or disable embed!");
+		if (id == null) {
+			logger.severe("Please provide an id for the embed channel!");
 			return;
 		}
 
-		TextChannel textChannel = bot.getTextChannelById(id);
-		setup(textChannel);
+		try {
+			TextChannel textChannel = bot.getTextChannelById(id);
+			setup(textChannel);
+		} catch (IllegalArgumentException e) {
+			logger.severe("IllegalArgumentException: ID is invalid!");
+			logger.severe("Check if embed is correct setup!");
+			return;
+		}
 
 	}
 
 	private void setup(TextChannel textChannel) {
-		if (config.getString("embedMessageID").equals("0")) {
+		String mId = config.getString("embedMessageID");
+		if (mId.equals("") || mId == null) {
 			send(textChannel);
 		}
 		scheduler(textChannel);
 	}
 
 	public void update() {
-		TextChannel textChannel = bot.getTextChannelById(config.getString("embed.textChannelID"));
-		String embedMessageID = config.getString("embedMessageID");
-		textChannel.editMessageEmbedsById(embedMessageID, embed().build()).queue();
+		String mId = config.getString("embed.textChannelID");
+		if (mId == null) {
+			return;
+		}
+		try {
+			TextChannel textChannel = bot.getTextChannelById(config.getString(mId));
+			String embedMessageID = config.getString("embedMessageID");
+			textChannel.editMessageEmbedsById(embedMessageID, embed().build()).queue();
+		} catch (IllegalArgumentException e) {
+			return;
+		}
 	}
 
 	public void update(EmbedBuilder embed) {
-		TextChannel textChannel = bot.getTextChannelById(config.getString("embed.textChannelID"));
-		String embedMessageID = config.getString("embedMessageID");
-		textChannel.editMessageEmbedsById(embedMessageID, embed.build()).queue();
+		String mId = config.getString("embed.textChannelID");
+		if (mId == null) {
+			return;
+		}
+		try {
+			TextChannel textChannel = bot.getTextChannelById(mId);
+			String embedMessageID = config.getString("embedMessageID");
+			textChannel.editMessageEmbedsById(embedMessageID, embed.build()).queue();
+		} catch (IllegalArgumentException e) {
+			return;
+		}
 	}
 
 	private void scheduler(TextChannel textChannel) {
@@ -69,7 +92,13 @@ public class EmbedStatus {
 			public void run() {
 				while (updateEmbed) {
 					try {
-						sleep(10000);
+						int sleep = config.getInt("embed.update");
+						if (sleep < 10000) {
+							logger.severe(
+									"Please keep the update interval above 10000 ms to avoid problems with discord.");
+							sleep = 30000;
+						}
+						sleep(sleep);
 					} catch (InterruptedException e) {
 						logger.severe("Updating the Embed failed! Thread interrupted!");
 					}
@@ -82,8 +111,9 @@ public class EmbedStatus {
 							logger.severe("Updating the Embed failed! Thread interrupted!");
 						}
 					}
-					if (updateEmbed)
+					if (updateEmbed) {
 						textChannel.editMessageEmbedsById(embedMessageID, embed().build()).queue();
+					}
 				}
 			}
 		}.start();

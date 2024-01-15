@@ -45,7 +45,13 @@ public class ActivityStatus {
 						jda.getPresence().setActivity(Activity.playing(activity[1]));
 					}
 					try {
-						sleep(45000);
+						int sleep = config.getInt("update-activity");
+						if (sleep < 15000) {
+							logger.severe(
+									"Please keep the update interval above 15000 ms to avoid problems with discord.");
+							sleep = 45000;
+						}
+						sleep(sleep);
 					} catch (InterruptedException e) {
 						logger.severe("Updating the activity has failed! The Thread Interrupted!");
 					}

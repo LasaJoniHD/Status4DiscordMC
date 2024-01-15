@@ -33,7 +33,7 @@ public class Placeholders {
 	}
 
 	public static String set(String msg) {
-		if (Status4Discord.papi) {
+		if (Status4Discord.getInstance().getPapi()) {
 			msg = PlaceholderAPI.setPlaceholders(null, msg);
 			msg = replace(msg);
 			return msg;
@@ -116,7 +116,7 @@ public class Placeholders {
 
 	public static String getUptime() {
 		long currentTime = System.currentTimeMillis();
-		long uptimeInSeconds = (currentTime - Status4Discord.startUp) / 1000;
+		long uptimeInSeconds = (currentTime - Status4Discord.getInstance().getStartUp()) / 1000;
 
 		if (uptimeInSeconds < 60) {
 			return uptimeInSeconds + " seconds";

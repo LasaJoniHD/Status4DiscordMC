@@ -26,6 +26,7 @@ token: ""
 # You can use PlaceholderAPI if installed (only placeholders that do not require a player).
 # Find placeholders included in Status4Discord at https://github.com/LasaJoniHD/Status4DiscordMC/wiki/Placeholders.
 activity: "PLAYING %online_players% / %max_players% Players"
+update-activity: 60000
 
 #  _    ___   ___ ___
 # | |  / _ \ / __/ __|
@@ -37,7 +38,7 @@ activity: "PLAYING %online_players% / %max_players% Players"
 # simply send a message in Discord in the channel like this: @MentionYourDiscordBot setlogs.
 logs:
   enabled: true
-  textChannelID: "0"
+  textChannelID: ""
 
 #  ___ __  __ ___ ___ ___
 # | __|  \/  | _ ) __|   \
@@ -54,7 +55,9 @@ logs:
 embed:
   enabled: true
   serverIP: "server.properties"
-  textChannelID: "0"
+  textChannelID: ""
+  update: 30000
 
 # Do not touch if you don't know what this setting does
-embedMessageID: "0"
+embedMessageID: ""
+debug: false
