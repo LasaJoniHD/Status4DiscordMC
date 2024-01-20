@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
+import joni.status4discordmc.Status4Discord;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -24,7 +25,7 @@ public class Logs {
 
 	public void sendMessangeToLogAsEmbed(String msg, Color c) {
 
-		String id = config.getString("logs.textChannelID");
+		String id = Status4Discord.getInstance().getConfig().getString("logs.textChannelID");
 
 		try {
 			TextChannel textChannel = bot.getTextChannelById(id);

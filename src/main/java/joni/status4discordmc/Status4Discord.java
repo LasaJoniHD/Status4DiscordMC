@@ -32,6 +32,7 @@ public class Status4Discord extends JavaPlugin {
 		instance = this;
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
 			papi = true;
+		getConfig().options().copyDefaults(true);
 		saveDefaultConfig();
 
 		startDiscord();

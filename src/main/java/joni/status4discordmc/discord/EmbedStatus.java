@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import joni.status4discordmc.Placeholders;
+import joni.status4discordmc.Status4Discord;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -17,6 +18,7 @@ public class EmbedStatus {
 	private JDA bot;
 	private FileConfiguration config;
 	private Logger logger;
+	@SuppressWarnings("unused")
 	private JavaPlugin plugin;
 
 	private Boolean updateEmbed = true;
@@ -52,7 +54,7 @@ public class EmbedStatus {
 	}
 
 	private void setup(TextChannel textChannel) {
-		String mId = config.getString("embedMessageID");
+		String mId = Status4Discord.getInstance().getConfig().getString("embedMessageID");
 		if (mId.equals("") || mId == null) {
 			send(textChannel);
 		}
@@ -124,9 +126,9 @@ public class EmbedStatus {
 			logger.severe("Bot can't talk in specified channel!");
 		}
 		textChannel.sendMessageEmbeds(embed().build()).queue(msg -> {
-			config.set("embedMessageID", msg.getId());
-			plugin.saveConfig();
-			plugin.reloadConfig();
+			Status4Discord.getInstance().getConfig().set("embedMessageID", msg.getId());
+			Status4Discord.getInstance().saveConfig();
+			Status4Discord.getInstance().reloadConfig();
 		});
 	}
 

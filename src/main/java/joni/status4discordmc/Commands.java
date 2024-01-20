@@ -29,6 +29,7 @@ public class Commands implements CommandExecutor, TabExecutor {
 
 		if (args.length == 0 || args[0].equals("info")) {
 			sendPluginInfo(s);
+			return false;
 		}
 
 		if (!s.hasPermission("status4discord.admin"))
