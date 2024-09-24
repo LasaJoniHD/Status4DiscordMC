@@ -18,7 +18,7 @@ public class Status4Discord extends JavaPlugin {
 	private long startUp;
 	private static Status4Discord instance;
 
-	private String ver = "1.0";
+	private final String ver = "1.0.1";
 
 	private Discord discord;
 
@@ -32,7 +32,7 @@ public class Status4Discord extends JavaPlugin {
 		instance = this;
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
 			papi = true;
-		getConfig().options().copyDefaults(true);
+        getConfig().options().copyDefaults(true);
 		saveDefaultConfig();
 
 		startDiscord();
@@ -105,7 +105,7 @@ public class Status4Discord extends JavaPlugin {
 						return;
 					}
 
-					getLogger().info("There is an update avaible for Status4Discord!");
+					getLogger().info("There is an update available for Status4Discord!");
 					getLogger().info("https://modrinth.com/plugins/status4discord");
 
 				} catch (IOException e) {
