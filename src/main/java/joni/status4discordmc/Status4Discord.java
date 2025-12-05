@@ -22,7 +22,7 @@ public class Status4Discord extends JavaPlugin {
 
 	private Discord discord;
 
-    private static boolean isPaper;
+    private static boolean isPaper = false;
 
 	@Override
 	public void onLoad() {
