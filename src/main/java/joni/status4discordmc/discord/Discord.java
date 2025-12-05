@@ -19,20 +19,18 @@ public class Discord {
 	private Logs logs;
 	private EmbedStatus embedStatus;
 
-	private JavaPlugin plugin;
+	private final JavaPlugin plugin;
 	private FileConfiguration config;
 	private JDA bot;
 
-	private DebugLogger dlog;
-
-	public Discord(JavaPlugin plugin, FileConfiguration config) {
+    public Discord(JavaPlugin plugin, FileConfiguration config) {
 		this.plugin = plugin;
 		this.config = config;
 	}
 
 	public void start() {
 
-		dlog = new DebugLogger(plugin);
+        DebugLogger dlog = new DebugLogger(plugin);
 
 		String token = config.getString("token");
 
@@ -139,11 +137,8 @@ public class Discord {
 		if (bot == null)
 			return null;
 
-		if (bot.getGuilds().size() > 0)
-			return true;
-
-		return false;
-	}
+        return !bot.getGuilds().isEmpty();
+    }
 
 	public String getInvitationLink() {
 		if (bot == null)

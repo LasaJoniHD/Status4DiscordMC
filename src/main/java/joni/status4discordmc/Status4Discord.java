@@ -18,9 +18,11 @@ public class Status4Discord extends JavaPlugin {
 	private long startUp;
 	private static Status4Discord instance;
 
-	private final String ver = "1.0.1";
+	private final String ver = getDescription().getVersion();
 
 	private Discord discord;
+
+    private static boolean isPaper;
 
 	@Override
 	public void onLoad() {
@@ -30,6 +32,15 @@ public class Status4Discord extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
+
+        try {
+            Class.forName("com.destroystokyo.paper.ParticleBuilder");
+            isPaper = true;
+        } catch (ClassNotFoundException ignored) {
+        }
+
+        if (!isPaper()) getLogger().warning("Please use paper for display of TPS!");
+
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
 			papi = true;
         getConfig().options().copyDefaults(true);
@@ -52,10 +63,6 @@ public class Status4Discord extends JavaPlugin {
 			discord.stop();
 	}
 
-	public Discord getDiscord() {
-		return discord;
-	}
-
 	public void startDiscord() {
 		discord = new Discord(this, getConfig());
 		discord.start();
@@ -68,6 +75,10 @@ public class Status4Discord extends JavaPlugin {
 	public long getStartUp() {
 		return startUp;
 	}
+
+    public static boolean isPaper() {
+        return isPaper;
+    }
 
 	public String getVersion() {
 		return ver;

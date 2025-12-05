@@ -9,50 +9,49 @@ import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import net.minecraft.server.MinecraftServer;
 
 public class Placeholders {
 
 	private final static Server s = Bukkit.getServer();
 
 	private static String replace(String msg) {
-		msg = msg.replaceAll("%tps%", String.valueOf(getTPS(0)));
-		msg = msg.replaceAll("%tps_5%", String.valueOf(getTPS(1)));
-		msg = msg.replaceAll("%tps_15%", String.valueOf(getTPS(2)));
-		msg = msg.replaceAll("%online_players%", Integer.toString(getOnlinePlayers()));
-		msg = msg.replaceAll("%max_players%", Integer.toString(getMaxPlayers()));
-		msg = msg.replaceAll("%cpu%", String.valueOf(getCPU()));
-		msg = msg.replaceAll("%freeram%", getFreeMemory());
-		msg = msg.replaceAll("%freeram_percentage%", getFreeInPercentMemory());
-		msg = msg.replaceAll("%usedram_percentage%", getUsedMemoryPercentage());
-		msg = msg.replaceAll("%usedram%", getUsedMemory());
-		msg = msg.replaceAll("%maxram%", getMaxMemory());
-		msg = msg.replaceAll("%serverip%", getServerIP());
-		msg = msg.replaceAll("%uptime%", getUptime());
+		msg = msg.replace("%tps%", String.valueOf(getTPS(0)));
+		msg = msg.replace("%tps_5%", String.valueOf(getTPS(1)));
+		msg = msg.replace("%tps_15%", String.valueOf(getTPS(2)));
+		msg = msg.replace("%online_players%", Integer.toString(getOnlinePlayers()));
+		msg = msg.replace("%max_players%", Integer.toString(getMaxPlayers()));
+		msg = msg.replace("%cpu%", String.valueOf(getCPU()));
+		msg = msg.replace("%freeram%", getFreeMemory());
+		msg = msg.replace("%freeram_percentage%", getFreeInPercentMemory());
+		msg = msg.replace("%usedram_percentage%", getUsedMemoryPercentage());
+		msg = msg.replace("%usedram%", getUsedMemory());
+		msg = msg.replace("%maxram%", getMaxMemory());
+		msg = msg.replace("%serverip%", getServerIP());
+		msg = msg.replace("%uptime%", getUptime());
 		return msg;
 	}
 
 	public static String set(String msg) {
 		if (Status4Discord.getInstance().getPapi()) {
 			msg = PlaceholderAPI.setPlaceholders(null, msg);
-			msg = replace(msg);
-			return msg;
 		}
-		return replace(msg);
+        msg = replace(msg);
+        return msg;
 	}
 
 	public static double getCPU() {
 		OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-		if (osBean instanceof com.sun.management.OperatingSystemMXBean) {
-			com.sun.management.OperatingSystemMXBean sunOsBean = (com.sun.management.OperatingSystemMXBean) osBean;
-			return Math.round(sunOsBean.getProcessCpuLoad() * 100 * 10.0) / 10.0;
+		if (osBean instanceof com.sun.management.OperatingSystemMXBean sunOsBean) {
+            return Math.round(sunOsBean.getProcessCpuLoad() * 100 * 10.0) / 10.0;
 		}
 		return 0;
 	}
 
-	@SuppressWarnings({ "resource", "deprecation" })
 	public static double getTPS(int m) {
-		return Math.round(MinecraftServer.getServer().recentTps[m] * 10.0) / 10.0;
+        if (Status4Discord.isPaper())
+            return Math.round(Bukkit.getServer().getTPS()[m] * 10.0) / 10.0;
+        else
+            return 0.0;
 	}
 
 	public static int getOnlinePlayers() {
@@ -103,9 +102,9 @@ public class Placeholders {
 
 	public static String getServerIP() {
 		String serverIP = Status4Discord.getInstance().getConfig().getString("embed.serverIP");
-		if (serverIP.equals("server.properties")) {
+		if (serverIP != null && serverIP.equalsIgnoreCase("server.properties")) {
 			String bukkitIP = Bukkit.getIp();
-			if (bukkitIP.equals("")) {
+			if (bukkitIP.isEmpty()) {
 				serverIP = "not set";
 			} else {
 				serverIP = bukkitIP;

@@ -16,8 +16,8 @@ import net.md_5.bungee.api.ChatColor;
 
 public class Commands implements CommandExecutor, TabExecutor {
 
-	private Discord discord;
-	private JavaPlugin plugin;
+	private final Discord discord;
+	private final JavaPlugin plugin;
 
 	public Commands(Discord discord, JavaPlugin plugin) {
 		this.discord = discord;
@@ -75,7 +75,6 @@ public class Commands implements CommandExecutor, TabExecutor {
 			}, 20);
 		} catch (Exception e) {
 			s.sendMessage(ChatColor.RED + "Something went wrong!");
-			e.printStackTrace();
 		}
 	}
 

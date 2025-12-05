@@ -1,36 +1,81 @@
 plugins {
-  id "com.github.johnrengelman.shadow" version "8.1.1"
-  id "java"
-  id "eclipse"
-  id 'idea'
+    id 'java'
+    id 'com.gradleup.shadow' version '9.2.2'
 }
+
 repositories {
     mavenCentral()
-    mavenLocal()
     maven {
-      url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
-      content {
-        includeGroup 'org.bukkit'
-        includeGroup 'org.spigotmc'
-      }
+        name = 'papermc'
+        url = 'https://repo.papermc.io/repository/maven-public/'
     }
-    maven {url "https://repo.extendedclip.com/content/repositories/placeholderapi/"}
+    maven {
+        url = 'https://repo.extendedclip.com/releases/'
+    }
 }
+
 dependencies {
-    compileOnly("org.spigotmc:spigot:1.18-R0.1-SNAPSHOT")
-    implementation("org.bstats:bstats-bukkit:3.0.2")
-    implementation("net.dv8tion:JDA:5.0.0-beta.23") {
+    compileOnly 'io.papermc.paper:paper-api:1.18-R0.1-SNAPSHOT'
+    // implementation 'dev.dejvokep:boosted-yaml:1.3.7'
+    implementation "org.bstats:bstats-bukkit:3.1.0"
+    implementation 'org.jetbrains:annotations:24.1.0'
+    compileOnly("me.clip:placeholderapi:2.11.7")
+    implementation("net.dv8tion:JDA:6.1.2") {
         exclude module: 'opus-java'
-    }
-//    implementation("dev.dejvokep:boosted-yaml:1.3.7")
-    compileOnly("me.clip:placeholderapi:2.11.6")
-}
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        exclude module: 'tink'
     }
 }
-shadowJar {
-   relocate "org.bstats", "joni.bstats"
-   relocate "net.dv8tion.jda", "joni.jda"
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
+}
+
+tasks.named('shadowJar') {
+    dependsOn tasks.named('processResources')
+    mustRunAfter tasks.named('processResources')
+
+    minimize()
+
+    archiveClassifier.set('')
+    relocate 'dev.dejvokep.boostedyaml', 'joni.status4discordmc.libs.boostedyaml'
+    relocate 'org.bstats', 'joni.status4discordmc.libs.bstats'
+    relocate 'org.jetbrains.annotations', 'joni.status4discordmc.libs.annotations'
+    relocate 'net.dv8tion.jda', 'joni.status4discordmc.libs.jda'
+
+    // Optional safety: clear cache if resources changed
+    outputs.upToDateWhen { false }
+}
+
+tasks.register('runServer', JavaExec) {
+    group = 'minecraft'
+    description = 'Builds the plugin and runs a Paper test server.'
+
+    def serverDir = layout.buildDirectory.dir("server")
+    def serverJar = serverDir.map { it.file("paper.jar") }
+
+    dependsOn tasks.named("shadowJar")
+
+    doFirst {
+        if (!serverJar.get().asFile.exists()) {
+            println "Downloading Paper server..."
+            serverJar.get().asFile.parentFile.mkdirs()
+            def downloadUrl = 'https://api.papermc.io/v2/projects/paper/versions/1.20.6/builds/151/downloads/paper-1.20.6-151.jar'
+
+            URI.create(downloadUrl).toURL().withInputStream { input ->
+                serverJar.get().asFile.withOutputStream { output ->
+                    output << input
+                }
+            }
+        }
+
+        println "Copying plugin jar to server plugins folder..."
+        copy {
+            from tasks.named("shadowJar").get().archiveFile
+            into serverDir.map { it.dir("plugins") }.get().asFile
+        }
+    }
+
+    workingDir = serverDir.get().asFile
+    mainClass.set('-jar')
+    args = [serverJar.get().asFile.absolutePath, '--nogui']
 }

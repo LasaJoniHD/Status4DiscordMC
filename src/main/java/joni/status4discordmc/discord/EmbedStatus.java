@@ -18,7 +18,6 @@ public class EmbedStatus {
 	private JDA bot;
 	private FileConfiguration config;
 	private Logger logger;
-	@SuppressWarnings("unused")
 	private JavaPlugin plugin;
 
 	private Boolean updateEmbed = true;
@@ -48,7 +47,6 @@ public class EmbedStatus {
 		} catch (IllegalArgumentException e) {
 			logger.severe("IllegalArgumentException: ID is invalid!");
 			logger.severe("Check if embed is correct setup!");
-			return;
 		}
 
 	}
@@ -84,8 +82,7 @@ public class EmbedStatus {
 			TextChannel textChannel = bot.getTextChannelById(mId);
 			String embedMessageID = config.getString("embedMessageID");
 			textChannel.editMessageEmbedsById(embedMessageID, embed.build()).queue();
-		} catch (IllegalArgumentException e) {
-			return;
+		} catch (IllegalArgumentException ignored) {
 		}
 	}
 
