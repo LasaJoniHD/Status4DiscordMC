@@ -101,7 +101,7 @@ public class Placeholders {
 	}
 
 	public static String getServerIP() {
-		String serverIP = Status4Discord.getInstance().getConfig().getString("embed.serverIP");
+		String serverIP = Status4Discord.getInstance().getConfigManager().getConfig().getString("embed.serverIP");
 		if (serverIP != null && serverIP.equalsIgnoreCase("server.properties")) {
 			String bukkitIP = Bukkit.getIp();
 			if (bukkitIP.isEmpty()) {

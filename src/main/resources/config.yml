@@ -61,3 +61,4 @@ embed:
 # Do not touch if you don't know what this setting does
 embedMessageID: ""
 debug: false
+config-version: 2

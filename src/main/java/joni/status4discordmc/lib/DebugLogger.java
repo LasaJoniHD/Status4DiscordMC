@@ -1,20 +1,21 @@
-package joni.lib;
+package joni.status4discordmc.lib;
 
+import joni.status4discordmc.Status4Discord;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class DebugLogger {
 
-	private JavaPlugin plugin;
+    private final JavaPlugin plugin;
 
-	public DebugLogger(JavaPlugin plugin) {
-		this.plugin = plugin;
-	}
+    public DebugLogger(JavaPlugin plugin) {
+        this.plugin = plugin;
+    }
 
-	public void debug(String log) {
-		if (log == null)
-			return;
-		if (plugin.getConfig().getBoolean("debug"))
-			plugin.getLogger().warning(log);
-	}
+    public void debug(String log) {
+        if (log == null)
+            return;
+        if (Status4Discord.getInstance().getConfigManager().getConfig().getBoolean("debug"))
+            plugin.getLogger().warning(log);
+    }
 
 }

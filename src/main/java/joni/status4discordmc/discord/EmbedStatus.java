@@ -1,178 +1,152 @@
 package joni.status4discordmc.discord;
 
-import java.awt.Color;
-import java.time.Instant;
-import java.util.logging.Logger;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
-
+import dev.dejvokep.boostedyaml.YamlDocument;
 import joni.status4discordmc.Placeholders;
 import joni.status4discordmc.Status4Discord;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
+import java.awt.*;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+
 public class EmbedStatus {
 
-	private JDA bot;
-	private FileConfiguration config;
-	private Logger logger;
-	private JavaPlugin plugin;
+    private final JDA bot;
+    private final Logger logger;
+    private final YamlDocument config;
+    private final ScheduledExecutorService scheduler;
 
-	private Boolean updateEmbed = true;
+    public EmbedStatus(JDA bot, Logger logger, ScheduledExecutorService scheduler) {
+        this.bot = bot;
+        this.logger = logger;
+        this.config = Status4Discord.getInstance().getConfigManager().getConfig();
+        this.scheduler = scheduler;
+    }
 
-	public EmbedStatus(JDA bot, Logger logger, FileConfiguration config, JavaPlugin plugin) {
-		this.bot = bot;
-		this.logger = logger;
-		this.config = config;
-		this.plugin = plugin;
-	}
+    public void start() {
+        if (!config.getBoolean("embed.enabled"))
+            return;
 
-	public void start() {
+        String id = config.getString("embed.textChannelID");
 
-		if (!isEnabled())
-			return;
+        if (id == null || id.isEmpty() || id.equals("0")) {
+            logger.severe("Please provide an id for the embed channel!");
+            return;
+        }
 
-		String id = config.getString("embed.textChannelID");
+        try {
+            TextChannel textChannel = bot.getTextChannelById(id);
+            if (textChannel == null) {
+                logger.severe("Please provide an id for the embed channel!");
+                return;
+            }
+            String mId = config.getString("embedMessageID");
+            if (mId == null || mId.isEmpty() || mId.equals("0")) {
+                send(textChannel);
+            } else {
+                schedule(textChannel);
+            }
+        } catch (IllegalArgumentException e) {
+            logger.severe("IllegalArgumentException: ID is invalid!");
+            logger.severe("Check if embed is correct setup!");
+        }
 
-		if (id == null) {
-			logger.severe("Please provide an id for the embed channel!");
-			return;
-		}
+    }
 
-		try {
-			TextChannel textChannel = bot.getTextChannelById(id);
-			setup(textChannel);
-		} catch (IllegalArgumentException e) {
-			logger.severe("IllegalArgumentException: ID is invalid!");
-			logger.severe("Check if embed is correct setup!");
-		}
+    private void schedule(TextChannel textChannel) {
+        int delay = config.getInt("embed.update", 30_000);
+        if (delay < 10_000) {
+            logger.severe(
+                    "Please keep the update interval above 10000 ms to avoid problems with Discord."
+            );
+            delay = 30_000;
+        }
 
-	}
+        scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                String embedMessageID = config.getString("embedMessageID");
 
-	private void setup(TextChannel textChannel) {
-		String mId = Status4Discord.getInstance().getConfig().getString("embedMessageID");
-		if (mId.equals("") || mId == null) {
-			send(textChannel);
-		}
-		scheduler(textChannel);
-	}
+                if (embedMessageID.equalsIgnoreCase("0")) {
+                    TextChannel t = bot.getTextChannelById(config.getString("embed.textChannelID"));
+                    if (t == null) return;
+                    send(t);
+                    return;
+                }
 
-	public void update() {
-		String mId = config.getString("embed.textChannelID");
-		if (mId == null) {
-			return;
-		}
-		try {
-			TextChannel textChannel = bot.getTextChannelById(config.getString(mId));
-			String embedMessageID = config.getString("embedMessageID");
-			textChannel.editMessageEmbedsById(embedMessageID, embed().build()).queue();
-		} catch (IllegalArgumentException e) {
-			return;
-		}
-	}
+                textChannel
+                        .editMessageEmbedsById(embedMessageID, embed().build())
+                        .queue();
 
-	public void update(EmbedBuilder embed) {
-		String mId = config.getString("embed.textChannelID");
-		if (mId == null) {
-			return;
-		}
-		try {
-			TextChannel textChannel = bot.getTextChannelById(mId);
-			String embedMessageID = config.getString("embedMessageID");
-			textChannel.editMessageEmbedsById(embedMessageID, embed.build()).queue();
-		} catch (IllegalArgumentException ignored) {
-		}
-	}
+            } catch (Exception e) {
+                logger.severe("Updating the Embed failed: " + e.getMessage());
+            }
 
-	private void scheduler(TextChannel textChannel) {
-		new Thread() {
-			public void run() {
-				while (updateEmbed) {
-					try {
-						int sleep = config.getInt("embed.update");
-						if (sleep < 10000) {
-							logger.severe(
-									"Please keep the update interval above 10000 ms to avoid problems with discord.");
-							sleep = 30000;
-						}
-						sleep(sleep);
-					} catch (InterruptedException e) {
-						logger.severe("Updating the Embed failed! Thread interrupted!");
-					}
-					String embedMessageID = config.getString("embedMessageID");
-					if (embedMessageID.equals("0")) {
-						send(bot.getTextChannelById(config.getString("embed.textChannelID")));
-						try {
-							sleep(30000);
-						} catch (InterruptedException e) {
-							logger.severe("Updating the Embed failed! Thread interrupted!");
-						}
-					}
-					if (updateEmbed) {
-						textChannel.editMessageEmbedsById(embedMessageID, embed().build()).queue();
-					}
-				}
-			}
-		}.start();
-	}
+        }, 10, delay, TimeUnit.MILLISECONDS);
+    }
 
-	private void send(TextChannel textChannel) {
-		if (!textChannel.canTalk()) {
-			logger.severe("Bot can't talk in specified channel!");
-		}
-		textChannel.sendMessageEmbeds(embed().build()).queue(msg -> {
-			Status4Discord.getInstance().getConfig().set("embedMessageID", msg.getId());
-			Status4Discord.getInstance().saveConfig();
-			Status4Discord.getInstance().reloadConfig();
-		});
-	}
 
-	private Boolean isEnabled() {
-		return config.getBoolean("embed.enabled");
-	}
+    private void send(TextChannel textChannel) {
+        if (!textChannel.canTalk()) {
+            logger.severe("Bot can't talk in specified channel!");
+        }
+        textChannel.sendMessageEmbeds(embed().build()).queue(msg -> {
+            config.set("embedMessageID", msg.getId());
+            try {
+                config.save();
+                config.reload();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            schedule(textChannel);
+        });
+    }
 
-	private EmbedBuilder embed() {
-		EmbedBuilder e = new EmbedBuilder();
+    private EmbedBuilder embed() {
+        EmbedBuilder e = new EmbedBuilder();
 
-		e.setTitle("Online");
-		e.setColor(Color.GREEN);
+        e.setTitle("Online");
+        e.setColor(Color.GREEN);
 
-		e.addField("Server IP", addFormat(Placeholders.getServerIP()), true);
-		e.addField("Player Count", addFormat(Placeholders.getOnlinePlayers() + " / " + Placeholders.getMaxPlayers()),
-				true);
-		e.addField("RAM", addFormat("Used: " + Placeholders.getUsedMemoryPercentage() + " % ("
-				+ Placeholders.getUsedMemory() + " mb / " + Placeholders.getMaxMemory() + " mb)"), false);
-		e.addField("Uptime", addFormat(Placeholders.getUptime()), true);
-		e.addField("TPS", addFormat(String.valueOf(Placeholders.getTPS(0))), true);
-		e.addField("CPU", addFormat(Placeholders.getCPU() + " %"), true);
+        e.addField("Server IP", addFormat(Placeholders.getServerIP()), true);
+        e.addField("Player Count", addFormat(Placeholders.getOnlinePlayers() + " / " + Placeholders.getMaxPlayers()),
+                true);
+        e.addField("RAM", addFormat("Used: " + Placeholders.getUsedMemoryPercentage() + " % ("
+                + Placeholders.getUsedMemory() + " mb / " + Placeholders.getMaxMemory() + " mb)"), false);
+        e.addField("Uptime", addFormat(Placeholders.getUptime()), true);
+        e.addField("TPS", addFormat(String.valueOf(Placeholders.getTPS(0))), true);
+        e.addField("CPU", addFormat(Placeholders.getCPU() + " %"), true);
 
-		e.setTimestamp(Instant.now());
-		return e;
-	}
+        e.setTimestamp(Instant.now());
+        return e;
+    }
 
-	public void reset() {
-		config.set("embedMessageID", "0");
-	}
+    public void stop() {
+        EmbedBuilder e = new EmbedBuilder();
+        e.setTitle("Offline");
+        e.setColor(Color.RED);
 
-	public void stop() {
+        e.addField("Server IP", addFormat(Placeholders.getServerIP()), true);
 
-		updateEmbed = false;
+        e.setTimestamp(Instant.now());
 
-		EmbedBuilder e = new EmbedBuilder();
-		e.setTitle("Offline");
-		e.setColor(Color.RED);
+        String mId = config.getString("embed.textChannelID");
+        if (mId == null || mId.isEmpty() || mId.equals("0")) return;
+        try {
+            TextChannel textChannel = bot.getTextChannelById(mId);
+            if (textChannel == null) return;
+            String embedMessageID = config.getString("embedMessageID");
+            textChannel.editMessageEmbedsById(embedMessageID, e.build()).queue();
+        } catch (IllegalArgumentException ignored) {
+        }
+    }
 
-		e.addField("Server IP", addFormat(Placeholders.getServerIP()), true);
-
-		e.setTimestamp(Instant.now());
-
-		update(e);
-	}
-
-	private String addFormat(String string) {
-		return "`" + string + "`";
-	}
+    private String addFormat(String string) {
+        return "`" + string + "`";
+    }
 
 }
