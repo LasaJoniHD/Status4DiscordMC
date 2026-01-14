@@ -1,6 +1,7 @@
 package joni.status4discordmc.discord;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
+import joni.status4discordmc.Placeholders;
 import joni.status4discordmc.Status4Discord;
 import joni.status4discordmc.lib.DebugLogger;
 import net.dv8tion.jda.api.JDA;
@@ -41,8 +42,28 @@ public class Discord {
         String token = config.getString("token");
 
         JDABuilder builder = JDABuilder.createDefault(token);
-        builder.setActivity(Activity.customStatus("Server is starting..."));
-        builder.setStatus(OnlineStatus.IDLE);
+
+        // Activity
+        String[] activity = Placeholders.set(config.getString("server-starting-activity")).split(" ", 2);
+
+        Activity.ActivityType activityType = Activity.ActivityType.CUSTOM_STATUS;
+        try {
+            activityType = Activity.ActivityType.valueOf(activity[0].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            plugin.getLogger().severe("The starting ActivityType " + activity[0] + " is invalid! Check your config!");
+        }
+
+        builder.setActivity(Activity.of(activityType, activity[1]));
+
+        OnlineStatus status = OnlineStatus.IDLE;
+        try {
+            status = OnlineStatus.valueOf(config.getString("server-starting-status").toUpperCase());
+        } catch (IllegalArgumentException e) {
+            plugin.getLogger().severe("The starting OnlineStatus " + config.getString("server-starting-status") + " " +
+                    "is invalid! Check your config!");
+        }
+
+        builder.setStatus(status);
 
         try {
             bot = builder.build();

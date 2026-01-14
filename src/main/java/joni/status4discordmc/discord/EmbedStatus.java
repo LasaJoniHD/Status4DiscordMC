@@ -3,6 +3,7 @@ package joni.status4discordmc.discord;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import joni.status4discordmc.Placeholders;
 import joni.status4discordmc.Status4Discord;
+import joni.status4discordmc.lib.ColorTranslator;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -10,6 +11,8 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import java.awt.*;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -59,12 +62,12 @@ public class EmbedStatus {
     }
 
     private void schedule(TextChannel textChannel) {
-        int delay = config.getInt("embed.update", 30_000);
-        if (delay < 10_000) {
+        int delay = config.getInt("embed.update", 30);
+        if (delay < 10) {
             logger.severe(
-                    "Please keep the update interval above 10000 ms to avoid problems with Discord."
+                    "Please keep the update interval above 10s to avoid problems with Discord."
             );
-            delay = 30_000;
+            delay = 30;
         }
 
         scheduler.scheduleWithFixedDelay(() -> {
@@ -86,7 +89,7 @@ public class EmbedStatus {
                 logger.severe("Updating the Embed failed: " + e.getMessage());
             }
 
-        }, 10, delay, TimeUnit.MILLISECONDS);
+        }, 1, delay, TimeUnit.SECONDS);
     }
 
 
@@ -107,32 +110,58 @@ public class EmbedStatus {
     }
 
     private EmbedBuilder embed() {
+        return buildEmbed("embed.online");
+    }
+
+    private EmbedBuilder buildEmbed(String path) {
         EmbedBuilder e = new EmbedBuilder();
 
-        e.setTitle("Online");
-        e.setColor(Color.GREEN);
+        // Title
+        e.setTitle(config.getString(path + ".title", "Status"));
 
-        e.addField("Server IP", addFormat(Placeholders.getServerIP()), true);
-        e.addField("Player Count", addFormat(Placeholders.getOnlinePlayers() + " / " + Placeholders.getMaxPlayers()),
-                true);
-        e.addField("RAM", addFormat("Used: " + Placeholders.getUsedMemoryPercentage() + " % ("
-                + Placeholders.getUsedMemory() + " mb / " + Placeholders.getMaxMemory() + " mb)"), false);
-        e.addField("Uptime", addFormat(Placeholders.getUptime()), true);
-        e.addField("TPS", addFormat(String.valueOf(Placeholders.getTPS(0))), true);
-        e.addField("CPU", addFormat(Placeholders.getCPU() + " %"), true);
+        // Color
+        try {
+            e.setColor(ColorTranslator.parseColor(
+                    config.getString(path + ".color", "GREEN").toUpperCase()
+                    , Color.GREEN));
+        } catch (IllegalArgumentException ignored) {
+            e.setColor(Color.GREEN);
+        }
 
-        e.setTimestamp(Instant.now());
+        // Fields
+        List<Map<?, ?>> fields = config.getMapList(path + ".fields");
+        for (Map<?, ?> field : fields) {
+            String name = String.valueOf(field.get("name"));
+            String value = String.valueOf(field.get("value"));
+            boolean inline = Boolean.parseBoolean(String.valueOf(field.get("inline")));
+
+            e.addField(
+                    Placeholders.set(name),
+                    Placeholders.set(value),
+                    inline
+            );
+        }
+
+        // Footer (optional)
+        String footer = config.getString(path + ".footer.text", null);
+        if (footer != null && !footer.isEmpty()) {
+            e.setFooter(Placeholders.set(footer));
+        }
+
+        // Timestamp (global toggle)
+        if (config.getBoolean("embed.timestamp", true)) {
+            e.setTimestamp(Instant.now());
+        }
+
         return e;
     }
 
+
     public void stop() {
-        EmbedBuilder e = new EmbedBuilder();
-        e.setTitle("Offline");
-        e.setColor(Color.RED);
+        if (!config.getBoolean("embed.enabled"))
+            return;
 
-        e.addField("Server IP", addFormat(Placeholders.getServerIP()), true);
-
-        e.setTimestamp(Instant.now());
+        EmbedBuilder e = buildEmbed("embed.offline");
 
         String mId = config.getString("embed.textChannelID");
         if (mId == null || mId.isEmpty() || mId.equals("0")) return;
@@ -143,10 +172,6 @@ public class EmbedStatus {
             textChannel.editMessageEmbedsById(embedMessageID, e.build()).queue();
         } catch (IllegalArgumentException ignored) {
         }
-    }
-
-    private String addFormat(String string) {
-        return "`" + string + "`";
     }
 
 }

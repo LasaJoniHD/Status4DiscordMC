@@ -21,12 +21,26 @@ token: ""
 #  / _ \ (__  | |  | | \ V / | |  | |  \ V /
 # /_/ \_\___| |_| |___| \_/ |___| |_|   |_|
 #
-# Avaible Activites:
+# Available Activities:
 # PLAYING, WATCHING, LISTENING, CUSTOM_STATUS, COMPETING
+# Available Status:
+# ONLINE, IDLE, DO_NOT_DISTURB, INVISIBLE, OFFLINE
 # You can use PlaceholderAPI if installed (only placeholders that do not require a player).
 # Find placeholders included in Status4Discord at https://github.com/LasaJoniHD/Status4DiscordMC/wiki/Placeholders.
 activity: "PLAYING %online_players% / %max_players% Players"
-update-activity: 60000
+status-activity: "ONLINE"
+update-activity: 30 # in seconds
+
+# Activities for server start
+server-starting-activity: "CUSTOM_STATUS Server is starting..."
+server-starting-status: "IDLE"
+
+# ServerIP
+# will replace internal Placeholder %serverip%
+# --------------------------------------------------------------------------------------------------------------------
+# 'serverIP' sets the server IP shown in activity and in the embed.
+# If in server.properties, it will obtain the IP that the server is bound to; if not set, it will display "not set."
+serverIP: "server.properties"
 
 #  _    ___   ___ ___
 # | |  / _ \ / __/ __|
@@ -39,6 +53,12 @@ update-activity: 60000
 logs:
   enabled: true
   textChannelID: ""
+  start:
+    color: "GREEN"
+    message: ":white_check_mark: **Server started!**"
+  stop:
+    color: "RED"
+    message: ":x: **Server stopped!**"
 
 #  ___ __  __ ___ ___ ___
 # | __|  \/  | _ ) __|   \
@@ -49,16 +69,55 @@ logs:
 # If you don't know how to obtain the textChannelID and have admin privileges,
 # simply send a message in Discord in the channel like this:
 # @MentionYourDiscordBot setembed.
-# --------------------------------------------------------------------------------------------------------------------
-# 'serverIP' sets the server IP shown in activity and in the embed.
-# If in server.properties, it will obtain the IP that the server is bound to; if not set, it will display "not set."
 embed:
   enabled: true
-  serverIP: "server.properties"
   textChannelID: ""
-  update: 30000
+  update: 15 # in seconds
+
+  online:
+    title: "Online"
+    color: "GREEN" # supports any java.awt.Color enum name (e.g. `RED`, `BLUE`, etc.) or a hex code (e.g. `#FF0000` for red)
+
+    timestamp: true
+
+    footer:
+      text: "Uptime: %uptime%"
+
+    fields:
+      - name: "Server IP"
+        value: "%serverip%"
+        inline: true
+
+      - name: "Player Count"
+        value: "%online_players% / %max_players%"
+        inline: true
+
+      - name: "RAM"
+        value: "Used: %usedram_percentage% % (%usedram% mb / %maxram% mb)"
+        inline: false
+
+      - name: "Uptime"
+        value: "%uptime%"
+        inline: true
+
+      - name: "TPS"
+        value: "%tps%"
+        inline: true
+
+      - name: "CPU"
+        value: "%cpu% %"
+        inline: true
+
+  offline:
+    title: "Offline"
+    color: "RED"
+
+    fields:
+      - name: "Server IP"
+        value: "%serverip%"
+        inline: true
 
 # Do not touch if you don't know what this setting does
 embedMessageID: ""
 debug: false
-config-version: 2
+config-version: 4

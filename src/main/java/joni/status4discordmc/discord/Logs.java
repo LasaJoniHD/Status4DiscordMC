@@ -1,6 +1,8 @@
 package joni.status4discordmc.discord;
 
+import dev.dejvokep.boostedyaml.YamlDocument;
 import joni.status4discordmc.Status4Discord;
+import joni.status4discordmc.lib.ColorTranslator;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -13,10 +15,12 @@ public class Logs {
 
     private final Logger logger;
     private final JDA bot;
+    private final YamlDocument config;
 
     public Logs(JDA bot, Logger logger) {
         this.logger = logger;
         this.bot = bot;
+        this.config = Status4Discord.getInstance().getConfigManager().getConfig();
     }
 
     public void sendMessageToLogAsEmbed(String msg, Color c) {
@@ -52,13 +56,15 @@ public class Logs {
     public void sendStart() {
         if (!isEnabled())
             return;
-        sendMessageToLogAsEmbed(":white_check_mark: **Server started!**", Color.GREEN);
+        sendMessageToLogAsEmbed(config.getString("logs.start.message", ":white_check_mark: **Server started!**"),
+                ColorTranslator.parseColor(config.getString("logs.start.color", "GREEN").toUpperCase(), Color.GREEN));
     }
 
     public void sendStop() {
         if (!isEnabled())
             return;
-        sendMessageToLogAsEmbed(":x: **Server stopped!**", Color.RED);
+        sendMessageToLogAsEmbed(config.getString("logs.stop.message", ":x: **Server stopped!**"),
+                ColorTranslator.parseColor(config.getString("logs.stop.color", "RED").toUpperCase(), Color.RED));
     }
 
     private Boolean isEnabled() {
