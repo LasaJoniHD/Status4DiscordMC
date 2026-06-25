@@ -21,13 +21,19 @@ public class ConfigManager {
     public ConfigManager(JavaPlugin plugin) throws IOException {
 
         // Update config: Convert milliseconds to seconds
-        YamlConfiguration v2_config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "config.yml"));
-        if (Integer.parseInt(v2_config.getString("config-version", "0")) <= 2) {
-            v2_config.set("update-activity", v2_config.getInt("update_activity", 60000) / 1000);
-            v2_config.set("embed.update", v2_config.getInt("embed.update", 30000) / 1000);
-            v2_config.set("config-version", 3);
-            v2_config.save(new File(plugin.getDataFolder(), "config.yml"));
-            Status4Discord.getInstance().getLogger().info("Config updated to v3! (Converted milliseconds to seconds)");
+        File configFile = new File(plugin.getDataFolder(), "config.yml");
+        if (configFile.exists()) {
+            YamlConfiguration v2_config = YamlConfiguration.loadConfiguration(configFile);
+            try {
+                if (Integer.parseInt(v2_config.getString("config-version", "0")) <= 2) {
+                    v2_config.set("update-activity", v2_config.getInt("update_activity", 60000) / 1000);
+                    v2_config.set("embed.update", v2_config.getInt("embed.update", 30000) / 1000);
+                    v2_config.set("config-version", 3);
+                    v2_config.save(configFile);
+                    Status4Discord.getInstance().getLogger().info("Config updated to v3! (Converted milliseconds to seconds)");
+                }
+            } catch (NumberFormatException ignored) {
+            }
         }
 
         config = YamlDocument.create(

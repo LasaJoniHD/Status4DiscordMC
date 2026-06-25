@@ -169,8 +169,8 @@ public class EmbedStatus {
             TextChannel textChannel = bot.getTextChannelById(mId);
             if (textChannel == null) return;
             String embedMessageID = config.getString("embedMessageID");
-            textChannel.editMessageEmbedsById(embedMessageID, e.build()).queue();
-        } catch (IllegalArgumentException ignored) {
+            textChannel.editMessageEmbedsById(embedMessageID, e.build()).complete();
+        } catch (Exception ignored) {
         }
     }
 

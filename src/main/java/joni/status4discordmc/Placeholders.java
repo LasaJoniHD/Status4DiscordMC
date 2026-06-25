@@ -115,17 +115,26 @@ public class Placeholders {
         long currentTime = System.currentTimeMillis();
         long uptimeInSeconds = (currentTime - Status4Discord.getInstance().getStartUp()) / 1000;
 
+        dev.dejvokep.boostedyaml.YamlDocument config = Status4Discord.getInstance().getConfigManager().getConfig();
+        String secondsStr = config.getString("messages.seconds", "seconds");
+        String minuteStr = config.getString("messages.minute", "minute");
+        String minutesStr = config.getString("messages.minutes", "minutes");
+        String hourStr = config.getString("messages.hour", "hour");
+        String hoursStr = config.getString("messages.hours", "hours");
+        String dayStr = config.getString("messages.day", "day");
+        String daysStr = config.getString("messages.days", "days");
+
         if (uptimeInSeconds < 60) {
-            return uptimeInSeconds + " seconds";
+            return uptimeInSeconds + " " + secondsStr;
         } else if (uptimeInSeconds < 3600) {
             long minutes = uptimeInSeconds / 60;
-            return minutes + (minutes == 1 ? " minute" : " minutes");
+            return minutes + " " + (minutes == 1 ? minuteStr : minutesStr);
         } else if (uptimeInSeconds < 86400) {
             long hours = uptimeInSeconds / 3600;
-            return hours + (hours == 1 ? " hour" : " hours");
+            return hours + " " + (hours == 1 ? hourStr : hoursStr);
         } else {
             long days = uptimeInSeconds / 86400;
-            return days + (days == 1 ? " day" : " days");
+            return days + " " + (days == 1 ? dayStr : daysStr);
         }
     }
 

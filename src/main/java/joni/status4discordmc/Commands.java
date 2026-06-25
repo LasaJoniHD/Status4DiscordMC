@@ -59,22 +59,20 @@ public class Commands implements CommandExecutor, TabExecutor {
     }
 
     private void doReload(CommandSender s) {
-        Status4Discord.getInstance().getDiscord().stop();
-        try {
-            Status4Discord.getInstance().getConfigManager().reloadConfig();
-        } catch (IOException e) {
-            plugin.getLogger().severe("Failed to reload config file! Please check if access to the file is granted!");
-            plugin.getLogger().severe("Disabling plugin!");
-            Bukkit.getPluginManager().disablePlugin(plugin);
-            return;
-        }
-        CompletableFuture.delayedExecutor(2, TimeUnit.SECONDS).execute(() -> {
+        s.sendMessage(ColorTranslator.translateColor("&f[&9Status&f4&9Discord&f] &6Reloading Status4Discord..."));
+        CompletableFuture.runAsync(() -> {
+            Status4Discord.getInstance().getDiscord().stop();
+            try {
+                Status4Discord.getInstance().getConfigManager().reloadConfig();
+            } catch (IOException e) {
+                plugin.getLogger().severe("Failed to reload config file! Please check if access to the file is granted!");
+                plugin.getLogger().severe("Disabling plugin!");
+                Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().disablePlugin(plugin));
+                return;
+            }
             Status4Discord.getInstance().startDiscord();
-        });
-        CompletableFuture.delayedExecutor(3, TimeUnit.SECONDS).execute(() -> {
             s.sendMessage(ColorTranslator.translateColor("&f[&9Status&f4&9Discord&f] &6Status4Discord reloaded!"));
         });
-
     }
 
     private void doInvite(CommandSender s) {

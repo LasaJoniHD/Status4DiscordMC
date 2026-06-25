@@ -24,6 +24,10 @@ public class Logs {
     }
 
     public void sendMessageToLogAsEmbed(String msg, Color c) {
+        sendMessageToLogAsEmbed(msg, c, false);
+    }
+
+    public void sendMessageToLogAsEmbed(String msg, Color c, boolean sync) {
 
         String id = Status4Discord.getInstance().getConfig().getString("logs.textChannelID");
         if (id == null || id.isEmpty() || id.equals("0")) {
@@ -42,7 +46,15 @@ public class Logs {
                 embed.setDescription(msg);
                 embed.setColor(c);
                 embed.setTimestamp(Instant.now());
-                textChannel.sendMessageEmbeds(embed.build()).queue();
+                if (sync) {
+                    try {
+                        textChannel.sendMessageEmbeds(embed.build()).complete();
+                    } catch (Exception e) {
+                        logger.severe("Failed to send stop log message: " + e.getMessage());
+                    }
+                } else {
+                    textChannel.sendMessageEmbeds(embed.build()).queue();
+                }
             } else {
                 logger.severe("The bot cannot talk in this channel, check your permissions!");
             }
@@ -64,7 +76,8 @@ public class Logs {
         if (!isEnabled())
             return;
         sendMessageToLogAsEmbed(config.getString("logs.stop.message", ":x: **Server stopped!**"),
-                ColorTranslator.parseColor(config.getString("logs.stop.color", "RED").toUpperCase(), Color.RED));
+                ColorTranslator.parseColor(config.getString("logs.stop.color", "RED").toUpperCase(), Color.RED),
+                true);
     }
 
     private Boolean isEnabled() {

@@ -46,7 +46,10 @@ public class DiscordCommands extends ListenerAdapter {
 
         dlog.debug("Member has permission Permission.ADMINISTRATOR");
 
-        String arg1 = raw.split(" ", 2)[1];
+        String[] split = raw.split(" ", 2);
+        if (split.length < 2)
+            return;
+        String arg1 = split[1];
 
         if (arg1.equals("setembed")) {
             Bukkit.getScheduler().runTask(plugin, () -> {

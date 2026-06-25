@@ -117,7 +117,16 @@ embed:
         value: "%serverip%"
         inline: true
 
+messages:
+  seconds: "seconds"
+  minute: "minute"
+  minutes: "minutes"
+  hour: "hour"
+  hours: "hours"
+  day: "day"
+  days: "days"
+
 # Do not touch if you don't know what this setting does
 embedMessageID: ""
 debug: false
-config-version: 4
+config-version: 5

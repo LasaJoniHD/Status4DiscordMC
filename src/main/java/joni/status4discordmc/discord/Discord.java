@@ -138,10 +138,15 @@ public class Discord {
         embedStatus.stop();
         logs.sendStop();
 
-        // wait shortly
-        CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS).execute(() -> {
-            bot.shutdown();
-        });
+        bot.shutdown();
+        try {
+            if (!bot.awaitShutdown(java.time.Duration.ofSeconds(10))) {
+                bot.shutdownNow();
+                bot.awaitShutdown();
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     public Boolean isInGuilds() {

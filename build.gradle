@@ -20,7 +20,7 @@ dependencies {
     implementation "org.bstats:bstats-bukkit:3.1.0"
     implementation 'org.jetbrains:annotations:24.1.0'
     compileOnly("me.clip:placeholderapi:2.11.7")
-    implementation("net.dv8tion:JDA:6.1.2") {
+    implementation("net.dv8tion:JDA:6.4.2") {
         exclude module: 'opus-java'
         exclude module: 'tink'
     }
@@ -78,4 +78,6 @@ tasks.register('runServer', JavaExec) {
     workingDir = serverDir.get().asFile
     mainClass.set('-jar')
     args = [serverJar.get().asFile.absolutePath, '--nogui']
+
+    standardInput = System.in
 }
