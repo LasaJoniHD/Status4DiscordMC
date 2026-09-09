@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Status4Discord.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Status4Discord.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bukkit/Status4Discord.bukkit.main.iml" filepath="$PROJECT_DIR$/.idea/modules/bukkit/Status4Discord.bukkit.main.iml" />
     </modules>
   </component>
 </project>

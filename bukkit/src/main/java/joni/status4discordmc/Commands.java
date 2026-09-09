@@ -1,6 +1,6 @@
 package joni.status4discordmc;
 
-import joni.status4discordmc.lib.ColorTranslator;
+import joni.status4discordmc.libs.ColorTranslator;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 public class Commands implements CommandExecutor, TabExecutor {
 
@@ -82,6 +81,7 @@ public class Commands implements CommandExecutor, TabExecutor {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender s, @NotNull Command cmd, @NotNull String label, String[] args) {
         ArrayList<String> list = new ArrayList<>();
+        if (!s.hasPermission("status4discord.admin")) return list;
         ArrayList<String> flist = new ArrayList<>();
         if (args.length == 1) {
             list.add("help");

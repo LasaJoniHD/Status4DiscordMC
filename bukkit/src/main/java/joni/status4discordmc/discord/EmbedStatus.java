@@ -3,7 +3,7 @@ package joni.status4discordmc.discord;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import joni.status4discordmc.Placeholders;
 import joni.status4discordmc.Status4Discord;
-import joni.status4discordmc.lib.ColorTranslator;
+import joni.status4discordmc.libs.ColorTranslator;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;

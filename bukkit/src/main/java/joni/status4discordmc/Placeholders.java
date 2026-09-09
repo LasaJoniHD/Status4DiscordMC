@@ -1,18 +1,16 @@
 package joni.status4discordmc;
 
+import joni.status4discordmc.placeholders.CpuMonitor;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class Placeholders {
 
-    private final static Server s = Bukkit.getServer();
+    private static final CpuMonitor CPU_MONITOR = new CpuMonitor();
 
     private static String replace(String msg) {
         msg = msg.replace("%tps%", String.valueOf(getTPS(0)));
@@ -41,11 +39,7 @@ public class Placeholders {
     }
 
     public static double getCPU() {
-        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-        if (osBean instanceof com.sun.management.OperatingSystemMXBean sunOsBean) {
-            return Math.round(sunOsBean.getProcessCpuLoad() * 100 * 10.0) / 10.0;
-        }
-        return 0;
+        return CPU_MONITOR.getCPU();
     }
 
     public static double getTPS(int m) {
@@ -56,11 +50,11 @@ public class Placeholders {
     }
 
     public static int getOnlinePlayers() {
-        return s.getOnlinePlayers().size();
+        return Bukkit.getServer().getOnlinePlayers().size();
     }
 
     public static int getMaxPlayers() {
-        return s.getMaxPlayers();
+        return Bukkit.getServer().getMaxPlayers();
     }
 
     public static String getFreeMemory() {

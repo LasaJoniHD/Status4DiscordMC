@@ -1,0 +1,71 @@
+plugins {
+    id 'java'
+    id 'com.gradleup.shadow' version '9.2.2'
+}
+
+version = project.property('version')
+
+layout.buildDirectory = rootProject.layout.buildDirectory
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'papermc'
+        url = 'https://repo.papermc.io/repository/maven-public/'
+    }
+    maven {
+        url = 'https://repo.extendedclip.com/releases/'
+    }
+}
+
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.18-R0.1-SNAPSHOT'
+    implementation 'dev.dejvokep:boosted-yaml:1.3.7'
+    implementation "org.bstats:bstats-bukkit:3.1.0"
+    implementation 'org.jetbrains:annotations:24.1.0'
+    compileOnly("me.clip:placeholderapi:2.11.7")
+    implementation("net.dv8tion:JDA:6.6.0") {
+        exclude module: 'opus-java'
+        exclude module: 'tink'
+    }
+}
+
+processResources {
+    filesMatching('plugin.yml') {
+        expand version: project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
+}
+
+tasks.named('shadowJar') {
+    dependsOn tasks.named('processResources')
+    mustRunAfter tasks.named('processResources')
+
+    minimize()
+
+    archiveBaseName.set('Status4Discord')
+    archiveClassifier.set('bukkit')
+    archiveVersion.set(project.version.toString())
+
+    relocate 'dev.dejvokep.boostedyaml', 'joni.status4discordmc.libs.boostedyaml'
+    relocate 'org.bstats', 'joni.status4discordmc.libs.bstats'
+    relocate 'org.jetbrains.annotations', 'joni.status4discordmc.libs.annotations'
+    relocate 'net.dv8tion.jda', 'joni.status4discordmc.libs.jda'
+    relocate 'com.fasterxml', 'joni.status4discordmc.libs.fasterxml'
+    relocate 'com.neovisionaries', 'joni.status4discordmc.libs.neovisionaries'
+    relocate 'okhttp3', 'joni.status4discordmc.libs.okhttp3'
+    relocate 'okio', 'joni.status4discordmc.libs.okio'
+    relocate 'kotlin', 'joni.status4discordmc.libs.kotlin'
+    relocate 'org.apache', 'joni.status4discordmc.libs.apache'
+    relocate 'org.slf4j', 'joni.status4discordmc.libs.slf4j'
+    relocate 'gnu.trove', 'joni.status4discordmc.libs.trove'
+    relocate 'org.intellij', 'joni.status4discordmc.libs.intellij'
+
+    mergeServiceFiles()
+
+    // Optional safety: clear cache if resources changed
+    outputs.upToDateWhen { false }
+}

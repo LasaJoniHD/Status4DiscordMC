@@ -2,7 +2,7 @@ package joni.status4discordmc.discord;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import joni.status4discordmc.Status4Discord;
-import joni.status4discordmc.lib.DebugLogger;
+import joni.status4discordmc.libs.DebugLogger;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
@@ -21,12 +21,9 @@ public class DiscordCommands extends ListenerAdapter {
 
     private final YamlDocument config;
 
-    private final DebugLogger dlog;
-
-    public DiscordCommands(JavaPlugin plugin, Discord discord, DebugLogger dlog) {
+    public DiscordCommands(JavaPlugin plugin, Discord discord) {
         this.plugin = plugin;
         this.discord = discord;
-        this.dlog = dlog;
         this.config = Status4Discord.getInstance().getConfigManager().getConfig();
     }
 
@@ -34,17 +31,17 @@ public class DiscordCommands extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent e) {
 
         String raw = e.getMessage().getContentRaw();
-        dlog.debug("MessageReceived: " + raw);
+        DebugLogger.log("MessageReceived: " + raw);
 
         if (!raw.startsWith("<@" + e.getJDA().getSelfUser().getId() + ">"))
             return;
 
-        dlog.debug("Message starts with mention of bot");
+        DebugLogger.log("I got mentioned!");
 
         if (!e.getMember().hasPermission(net.dv8tion.jda.api.Permission.ADMINISTRATOR))
             return;
 
-        dlog.debug("Member has permission Permission.ADMINISTRATOR");
+        DebugLogger.log("Sender got Permission.ADMINISTRATOR");
 
         String[] split = raw.split(" ", 2);
         if (split.length < 2)
@@ -53,57 +50,38 @@ public class DiscordCommands extends ListenerAdapter {
 
         if (arg1.equals("setembed")) {
             Bukkit.getScheduler().runTask(plugin, () -> {
-                dlog.debug("Doing setembed cmd");
+                DebugLogger.log("Setting Embed...");
 
                 config.set("embed.textChannelID", e.getChannel().getId());
-                dlog.debug("Updated embed.textChannelID to " + e.getChannel().getId());
+                DebugLogger.log("Updated embed.textChannelID to " + e.getChannel().getId());
 
                 config.set("embedMessageID", "");
-                dlog.debug("embedMessageID set to ''");
+                DebugLogger.log("Updated embedMessageID to ''");
 
-                try {
-                    config.save();
-                    config.reload();
-                    dlog.debug("Saving config");
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+                saveConfig();
 
                 e.getMessage().addReaction(Emoji.fromUnicode("U+2705")).queue(msg -> {
                     deleteMessage(e);
-                    Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-
-                        @Override
-                        public void run() {
-                            discord.getEmbedStatus().start();
-                        }
-                    }, 40);
-
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> discord.getEmbedStatus().start(), 40);
                 }, null);
-                dlog.debug("Reaction U+2705 added");
+                DebugLogger.log("Reaction U+2705 added");
             });
             return;
         }
 
         if (arg1.equals("setlogs")) {
             Bukkit.getScheduler().runTask(plugin, () -> {
-                dlog.debug("Doing setlogs");
+                DebugLogger.log("Setting Logs...");
 
                 config.set("logs.textChannelID", e.getChannel().getId());
-                dlog.debug("Updated logs.textChannelID to " + e.getChannel().getId());
+                DebugLogger.log("Updated logs.textChannelID to " + e.getChannel().getId());
 
-                try {
-                    config.save();
-                    config.reload();
-                    dlog.debug("Saving config");
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+                saveConfig();
 
                 e.getMessage().addReaction(Emoji.fromUnicode("U+2705")).queue(msg -> {
                     deleteMessage(e);
                 }, null);
-                dlog.debug("Reaction U+2705 added");
+                DebugLogger.log("Reaction U+2705 added");
             });
         }
     }
@@ -112,15 +90,25 @@ public class DiscordCommands extends ListenerAdapter {
         CompletableFuture
                 .delayedExecutor(500, TimeUnit.MILLISECONDS)
                 .execute(() -> {
-                    dlog.debug("deleteMessage");
+                    DebugLogger.log("deleteMessage");
                     e.getMessage().delete().queue(null, failure -> {
                         if (failure instanceof ErrorResponseException ex && ex.getErrorCode() == 10008) {
-                            dlog.debug("Message already deleted");
+                            DebugLogger.log("Message already deleted...");
                         } else {
                             failure.printStackTrace();
                         }
                     });
                 });
+    }
+
+    private void saveConfig() {
+        try {
+            config.save();
+            config.reload();
+            DebugLogger.log("Saving config");
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
 }

@@ -3,7 +3,7 @@ package joni.status4discordmc.discord;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import joni.status4discordmc.Placeholders;
 import joni.status4discordmc.Status4Discord;
-import joni.status4discordmc.lib.DebugLogger;
+import joni.status4discordmc.libs.DebugLogger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -12,10 +12,8 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class Discord {
@@ -37,7 +35,8 @@ public class Discord {
 
     public void start() {
 
-        DebugLogger dlog = new DebugLogger(plugin);
+        // Set Debug Logging
+        DebugLogger.setDebug(config.getBoolean("debug"));
 
         String token = config.getString("token");
 
@@ -77,7 +76,7 @@ public class Discord {
             return;
         }
 
-        dlog.debug(token + " is valid");
+        DebugLogger.log(token + " is valid!");
 
         try {
             bot.awaitReady();
@@ -86,19 +85,17 @@ public class Discord {
             return;
         }
 
-        dlog.debug("Bot is ready");
+        DebugLogger.log("Bot is ready!");
 
         plugin.getLogger().info("Logged in as " + bot.getSelfUser().getName());
 
-        bot.addEventListener(new DiscordCommands(plugin, this, dlog));
+        bot.addEventListener(new DiscordCommands(plugin, this));
 
-        dlog.debug("Commands event added");
+        DebugLogger.log("Commands event added!");
 
         if (!isInGuilds()) {
-            dlog.debug("Bot is not in guilds");
             plugin.getLogger().warning("The Discord bot is not on any guild! Maybe you would like to invite him:");
             plugin.getLogger().warning(getInvitationLink());
-            dlog.debug("getInvitationLink");
         }
 
         createModules();

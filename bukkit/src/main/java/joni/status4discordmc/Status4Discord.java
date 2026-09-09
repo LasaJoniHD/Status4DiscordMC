@@ -2,17 +2,13 @@ package joni.status4discordmc;
 
 import joni.status4discordmc.config.ConfigManager;
 import joni.status4discordmc.discord.Discord;
+import joni.status4discordmc.libs.UpdateChecker;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 public class Status4Discord extends JavaPlugin {
 
@@ -42,7 +38,10 @@ public class Status4Discord extends JavaPlugin {
         } catch (ClassNotFoundException ignored) {
         }
 
-        if (!isPaper()) getLogger().warning("Please use paper for display of TPS!");
+        if (!isPaper()) {
+            getLogger().warning("This server is not running Paper! Some features may not work properly!");
+            getLogger().warning("TPS Placeholder will not work properly!");
+        }
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
             papi = true;
@@ -66,7 +65,8 @@ public class Status4Discord extends JavaPlugin {
         getCommand("status4discord").setExecutor(commands);
         getCommand("status4discord").setTabCompleter(commands);
 
-        updateChecker();
+        UpdateChecker updateChecker = new UpdateChecker(this, "status4discord", getVersion(), List.of("paper", "spigot", "bukkit", "purpur"), null);
+
     }
 
     @Override
@@ -108,35 +108,4 @@ public class Status4Discord extends JavaPlugin {
         return papi;
     }
 
-    private void updateChecker() {
-        CompletableFuture.delayedExecutor(3, TimeUnit.SECONDS).execute(() -> {
-            try {
-                StringBuilder content = new StringBuilder();
-
-                URL url = new URL(
-                        "https://raw.githubusercontent.com/LasaJoniHD/Status4DiscordMC/main/assests/version.txt");
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    content.append(line);
-                }
-
-                reader.close();
-
-                if (content.toString().equals(ver)) {
-                    getLogger().info("You are running the latest version!");
-                    return;
-                }
-
-                getLogger().info("There is an update available for Status4Discord!");
-                getLogger().info("https://modrinth.com/plugins/status4discord");
-
-            } catch (IOException e) {
-                getLogger().info("Can't check for updates? Server might be unavailable...");
-            }
-
-        });
-    }
 }

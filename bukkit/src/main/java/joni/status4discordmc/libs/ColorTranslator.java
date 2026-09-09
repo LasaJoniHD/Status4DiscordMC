@@ -1,4 +1,4 @@
-package joni.status4discordmc.lib;
+package joni.status4discordmc.libs;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -25,7 +25,7 @@ public interface ColorTranslator {
         return ChatColor.translateAlternateColorCodes('&', msg);
 
     }
-    
+
     static Color parseColor(String value, Color fallback) {
         if (value == null) return fallback;
 
