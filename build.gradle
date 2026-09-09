@@ -3,6 +3,6 @@
 
 tasks.register('build') {
     group = 'build'
-    description = 'Builds the Bukkit plugin jar.'
-    dependsOn ':bukkit:shadowJar'
+    description = 'Builds the project.'
+    dependsOn ':bukkit:shadowJar', ':fabric:26.1.2:jar'
 }

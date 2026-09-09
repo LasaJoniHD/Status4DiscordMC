@@ -1,4 +1,15 @@
+pluginManagement {
+    repositories {
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
 rootProject.name = 'Status4Discord'
 
 include 'bukkit'
-include 'fabric'
+include 'fabric:26.1.2'
