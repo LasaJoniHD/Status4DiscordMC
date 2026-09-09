@@ -78,7 +78,7 @@ public class DiscordCommands extends ListenerAdapter {
                         if (failure instanceof ErrorResponseException ex && ex.getErrorCode() == 10008) {
                             DebugLogger.log("Message already deleted...");
                         } else {
-                            failure.printStackTrace();
+                            Status4Discord.getInstance().getLogger().severe("Failed to delete message: " + failure.getMessage());
                         }
                     });
                 });

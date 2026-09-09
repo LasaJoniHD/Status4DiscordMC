@@ -46,7 +46,10 @@ tasks.named('shadowJar') {
     dependsOn tasks.named('processResources')
     mustRunAfter tasks.named('processResources')
 
-    minimize()
+    minimize {
+        // ServiceLoader-loaded classes are invisible to the minimizer - keep them:
+        exclude(dependency('org.slf4j:.*:.*'))
+    }
 
     archiveBaseName.set('Status4Discord')
     archiveClassifier.set('bukkit')

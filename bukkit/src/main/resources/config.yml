@@ -56,9 +56,11 @@ logs:
   start:
     color: "GREEN"
     message: ":white_check_mark: **Server started!**"
+    embed: true
   stop:
     color: "RED"
     message: ":x: **Server stopped!**"
+    embed: true
 
 #  ___ __  __ ___ ___ ___
 # | __|  \/  | _ ) __|   \
@@ -129,4 +131,4 @@ messages:
 # Do not touch if you don't know what this setting does
 embedMessageID: ""
 debug: false
-config-version: 5
+config-version: 6

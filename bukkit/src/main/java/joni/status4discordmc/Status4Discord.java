@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Status4Discord extends JavaPlugin {
 
-    boolean papi = false;
+    private boolean papi = false;
     private long startUp;
     private static Status4Discord instance;
 
@@ -22,6 +22,7 @@ public class Status4Discord extends JavaPlugin {
     private ConfigManager configManager;
 
     private static boolean isPaper = false;
+
 
     @Override
     public void onLoad() {
@@ -38,6 +39,13 @@ public class Status4Discord extends JavaPlugin {
         } catch (ClassNotFoundException ignored) {
         }
 
+        try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            Status4Discord.getInstance().getLogger()
+                    .warning("TPS Placeholder is not supported on this server type yet.");
+        } catch (ClassNotFoundException ignored) {
+        }
+        
         if (!isPaper()) {
             getLogger().warning("This server is not running Paper! Some features may not work properly!");
             getLogger().warning("TPS Placeholder will not work properly!");

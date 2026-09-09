@@ -23,14 +23,15 @@ public class Logs {
         this.config = Status4Discord.getInstance().getConfigManager().getConfig();
     }
 
-    public void sendMessageToLogAsEmbed(String msg, Color c) {
-        sendMessageToLogAsEmbed(msg, c, false);
-    }
+    /**
+     * Sends a message to the configured log channel, either as embed or as
+     * plain text depending on the {@code embed} flag (logs.start.embed /
+     * logs.stop.embed in the config).
+     */
+    public void sendMessageToLog(String msg, Color c, boolean sync, boolean embed) {
 
-    public void sendMessageToLogAsEmbed(String msg, Color c, boolean sync) {
-
-        String id = Status4Discord.getInstance().getConfig().getString("logs.textChannelID");
-        if (id == null || id.isEmpty() || id.equals("0")) {
+        String id = config.getString("logs.textChannelID");
+        if (id == null || id.isEmpty()) {
             logger.severe("Please provide an id for the log channel!");
             return;
         }
@@ -42,24 +43,36 @@ public class Logs {
                 return;
             }
             if (textChannel.canTalk()) {
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.setDescription(msg);
-                embed.setColor(c);
-                embed.setTimestamp(Instant.now());
-                if (sync) {
-                    try {
-                        textChannel.sendMessageEmbeds(embed.build()).complete();
-                    } catch (Exception e) {
-                        logger.severe("Failed to send stop log message: " + e.getMessage());
+                if (embed) {
+                    EmbedBuilder e = new EmbedBuilder();
+                    e.setDescription(msg);
+                    e.setColor(c);
+                    e.setTimestamp(Instant.now());
+                    if (sync) {
+                        try {
+                            textChannel.sendMessageEmbeds(e.build()).complete();
+                        } catch (Exception ex) {
+                            logger.severe("Failed to send stop log message: " + ex.getMessage());
+                        }
+                    } else {
+                        textChannel.sendMessageEmbeds(e.build()).queue();
                     }
                 } else {
-                    textChannel.sendMessageEmbeds(embed.build()).queue();
+                    if (sync) {
+                        try {
+                            textChannel.sendMessage(msg).complete();
+                        } catch (Exception ex) {
+                            logger.severe("Failed to send stop log message: " + ex.getMessage());
+                        }
+                    } else {
+                        textChannel.sendMessage(msg).queue();
+                    }
                 }
             } else {
                 logger.severe("The bot cannot talk in this channel, check your permissions!");
             }
 
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ex) {
             logger.severe("IllegalArgumentException: ID is invalid!");
             logger.severe("Check if logs is correct setup!");
         }
@@ -68,16 +81,19 @@ public class Logs {
     public void sendStart() {
         if (!isEnabled())
             return;
-        sendMessageToLogAsEmbed(config.getString("logs.start.message", ":white_check_mark: **Server started!**"),
-                ColorTranslator.parseColor(config.getString("logs.start.color", "GREEN").toUpperCase(), Color.GREEN));
+        sendMessageToLog(config.getString("logs.start.message", ":white_check_mark: **Server started!**"),
+                ColorTranslator.parseColor(config.getString("logs.start.color", "GREEN").toUpperCase(), Color.GREEN),
+                false,
+                config.getBoolean("logs.start.embed", true));
     }
 
     public void sendStop() {
         if (!isEnabled())
             return;
-        sendMessageToLogAsEmbed(config.getString("logs.stop.message", ":x: **Server stopped!**"),
+        sendMessageToLog(config.getString("logs.stop.message", ":x: **Server stopped!**"),
                 ColorTranslator.parseColor(config.getString("logs.stop.color", "RED").toUpperCase(), Color.RED),
-                true);
+                true,
+                config.getBoolean("logs.stop.embed", true));
     }
 
     private Boolean isEnabled() {

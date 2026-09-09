@@ -37,7 +37,7 @@ public class EmbedStatus {
 
         String id = config.getString("embed.textChannelID");
 
-        if (id == null || id.isEmpty() || id.equals("0")) {
+        if (id == null || id.isEmpty()) {
             logger.severe("Please provide an id for the embed channel!");
             return;
         }
@@ -49,7 +49,7 @@ public class EmbedStatus {
                 return;
             }
             String mId = config.getString("embedMessageID");
-            if (mId == null || mId.isEmpty() || mId.equals("0")) {
+            if (mId == null || mId.isEmpty()) {
                 send(textChannel);
             } else {
                 schedule(textChannel);
@@ -74,7 +74,7 @@ public class EmbedStatus {
             try {
                 String embedMessageID = config.getString("embedMessageID");
 
-                if (embedMessageID.equalsIgnoreCase("0")) {
+                if (embedMessageID.isEmpty()) {
                     TextChannel t = bot.getTextChannelById(config.getString("embed.textChannelID"));
                     if (t == null) return;
                     send(t);
@@ -164,7 +164,7 @@ public class EmbedStatus {
         EmbedBuilder e = buildEmbed("embed.offline");
 
         String mId = config.getString("embed.textChannelID");
-        if (mId == null || mId.isEmpty() || mId.equals("0")) return;
+        if (mId == null || mId.isEmpty()) return;
         try {
             TextChannel textChannel = bot.getTextChannelById(mId);
             if (textChannel == null) return;

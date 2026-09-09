@@ -43,10 +43,14 @@ public class Placeholders {
     }
 
     public static double getTPS(int m) {
-        if (Status4Discord.isPaper())
-            return Math.round(Bukkit.getServer().getTPS()[m] * 10.0) / 10.0;
-        else
+        if (!Status4Discord.isPaper())
             return 0.0;
+        try {
+            return Math.round(Bukkit.getServer().getTPS()[m] * 10.0) / 10.0;
+        } catch (UnsupportedOperationException e) {
+            // Folia: getTPS() only works on region tick threads - not available globally.
+            return 0.0;
+        }
     }
 
     public static int getOnlinePlayers() {
