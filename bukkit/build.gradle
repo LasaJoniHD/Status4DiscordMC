@@ -24,6 +24,8 @@ dependencies {
     implementation "org.bstats:bstats-bukkit:3.1.0"
     implementation 'org.jetbrains:annotations:24.1.0'
     compileOnly("me.clip:placeholderapi:2.11.7")
+    // SLF4J provider (JUL backend) so bundled+relocated JDA logs aren't discarded
+    implementation("org.slf4j:slf4j-jdk14:2.0.19")
     implementation("net.dv8tion:JDA:6.6.0") {
         exclude module: 'opus-java'
         exclude module: 'tink'

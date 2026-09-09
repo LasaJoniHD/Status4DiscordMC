@@ -7,8 +7,6 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -16,13 +14,11 @@ import java.util.concurrent.TimeUnit;
 
 public class DiscordCommands extends ListenerAdapter {
 
-    private final JavaPlugin plugin;
     private final Discord discord;
 
     private final YamlDocument config;
 
-    public DiscordCommands(JavaPlugin plugin, Discord discord) {
-        this.plugin = plugin;
+    public DiscordCommands(Discord discord) {
         this.discord = discord;
         this.config = Status4Discord.getInstance().getConfigManager().getConfig();
     }
@@ -49,40 +45,37 @@ public class DiscordCommands extends ListenerAdapter {
         String arg1 = split[1];
 
         if (arg1.equals("setembed")) {
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                DebugLogger.log("Setting Embed...");
+            DebugLogger.log("Setting Embed...");
 
-                config.set("embed.textChannelID", e.getChannel().getId());
-                DebugLogger.log("Updated embed.textChannelID to " + e.getChannel().getId());
+            config.set("embed.textChannelID", e.getChannel().getId());
+            DebugLogger.log("Updated embed.textChannelID to " + e.getChannel().getId());
 
-                config.set("embedMessageID", "");
-                DebugLogger.log("Updated embedMessageID to ''");
+            config.set("embedMessageID", "");
+            DebugLogger.log("Updated embedMessageID to ''");
 
-                saveConfig();
+            saveConfig();
 
-                e.getMessage().addReaction(Emoji.fromUnicode("U+2705")).queue(msg -> {
-                    deleteMessage(e);
-                    Bukkit.getScheduler().runTaskLater(plugin, () -> discord.getEmbedStatus().start(), 40);
-                }, null);
-                DebugLogger.log("Reaction U+2705 added");
-            });
+            e.getMessage().addReaction(Emoji.fromUnicode("U+2705")).queue(msg -> {
+                deleteMessage(e);
+                CompletableFuture.delayedExecutor(2, TimeUnit.SECONDS)
+                        .execute(() -> discord.getEmbedStatus().start());
+            }, null);
+            DebugLogger.log("Reaction U+2705 added");
             return;
         }
 
         if (arg1.equals("setlogs")) {
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                DebugLogger.log("Setting Logs...");
+            DebugLogger.log("Setting Logs...");
 
-                config.set("logs.textChannelID", e.getChannel().getId());
-                DebugLogger.log("Updated logs.textChannelID to " + e.getChannel().getId());
+            config.set("logs.textChannelID", e.getChannel().getId());
+            DebugLogger.log("Updated logs.textChannelID to " + e.getChannel().getId());
 
-                saveConfig();
+            saveConfig();
 
-                e.getMessage().addReaction(Emoji.fromUnicode("U+2705")).queue(msg -> {
-                    deleteMessage(e);
-                }, null);
-                DebugLogger.log("Reaction U+2705 added");
-            });
+            e.getMessage().addReaction(Emoji.fromUnicode("U+2705")).queue(msg -> {
+                deleteMessage(e);
+            }, null);
+            DebugLogger.log("Reaction U+2705 added");
         }
     }
 

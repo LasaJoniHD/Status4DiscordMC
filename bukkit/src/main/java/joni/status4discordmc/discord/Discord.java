@@ -89,7 +89,7 @@ public class Discord {
 
         plugin.getLogger().info("Logged in as " + bot.getSelfUser().getName());
 
-        bot.addEventListener(new DiscordCommands(plugin, this));
+        bot.addEventListener(new DiscordCommands(this));
 
         DebugLogger.log("Commands event added!");
 

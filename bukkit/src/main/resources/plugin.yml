@@ -6,6 +6,7 @@ api-version: 1.18
 load: STARTUP
 description: A discord bot, showing the current status of your server as embed, activity and more.
 softdepend: [ PlaceholderAPI ]
+folia-supported: true
 
 commands:
   status4discord:

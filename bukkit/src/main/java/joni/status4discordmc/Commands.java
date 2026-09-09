@@ -66,7 +66,7 @@ public class Commands implements CommandExecutor, TabExecutor {
             } catch (IOException e) {
                 plugin.getLogger().severe("Failed to reload config file! Please check if access to the file is granted!");
                 plugin.getLogger().severe("Disabling plugin!");
-                Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().disablePlugin(plugin));
+                Bukkit.getPluginManager().disablePlugin(plugin);
                 return;
             }
             Status4Discord.getInstance().startDiscord();
