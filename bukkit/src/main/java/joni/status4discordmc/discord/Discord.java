@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.concurrent.Executors;
@@ -97,6 +99,16 @@ public class Discord {
             plugin.getLogger().warning("The Discord bot is not on any guild! Maybe you would like to invite him:");
             plugin.getLogger().warning(getInvitationLink());
         }
+
+        // Slash Commands
+        bot.getGuilds().forEach(guild -> {
+            guild.updateCommands().addCommands(
+                    Commands.slash("setembed", "Set this channel as the status embed channel")
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
+                    Commands.slash("setlogs", "Set this channel as the log channel")
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
+            ).queue();
+        });
 
         createModules();
         startModules();

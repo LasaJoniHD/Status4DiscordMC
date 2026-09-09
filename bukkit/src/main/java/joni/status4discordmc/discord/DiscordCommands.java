@@ -4,6 +4,7 @@ import dev.dejvokep.boostedyaml.YamlDocument;
 import joni.status4discordmc.Status4Discord;
 import joni.status4discordmc.libs.DebugLogger;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -26,6 +27,8 @@ public class DiscordCommands extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
 
+        // Message Stuff
+
         String raw = e.getMessage().getContentRaw();
         DebugLogger.log("MessageReceived: " + raw);
 
@@ -44,17 +47,10 @@ public class DiscordCommands extends ListenerAdapter {
             return;
         String arg1 = split[1];
 
+        // Handle Commands
+
         if (arg1.equals("setembed")) {
-            DebugLogger.log("Setting Embed...");
-
-            config.set("embed.textChannelID", e.getChannel().getId());
-            DebugLogger.log("Updated embed.textChannelID to " + e.getChannel().getId());
-
-            config.set("embedMessageID", "");
-            DebugLogger.log("Updated embedMessageID to ''");
-
-            saveConfig();
-
+            setEmbed(e.getChannel().getId());
             e.getMessage().addReaction(Emoji.fromUnicode("U+2705")).queue(msg -> {
                 deleteMessage(e);
                 CompletableFuture.delayedExecutor(2, TimeUnit.SECONDS)
@@ -65,13 +61,7 @@ public class DiscordCommands extends ListenerAdapter {
         }
 
         if (arg1.equals("setlogs")) {
-            DebugLogger.log("Setting Logs...");
-
-            config.set("logs.textChannelID", e.getChannel().getId());
-            DebugLogger.log("Updated logs.textChannelID to " + e.getChannel().getId());
-
-            saveConfig();
-
+            setLogs(e.getChannel().getId());
             e.getMessage().addReaction(Emoji.fromUnicode("U+2705")).queue(msg -> {
                 deleteMessage(e);
             }, null);
@@ -101,6 +91,41 @@ public class DiscordCommands extends ListenerAdapter {
             DebugLogger.log("Saving config");
         } catch (IOException ex) {
             throw new RuntimeException(ex);
+        }
+    }
+
+    private void setEmbed(String channelId) {
+        DebugLogger.log("Setting Embed...");
+
+        config.set("embed.textChannelID", channelId);
+        DebugLogger.log("Updated embed.textChannelID to " + channelId);
+
+        config.set("embedMessageID", "");
+        DebugLogger.log("Updated embedMessageID to ''");
+
+        saveConfig();
+    }
+
+    private void setLogs(String channelId) {
+        DebugLogger.log("Setting Logs...");
+
+        config.set("logs.textChannelID", channelId);
+        DebugLogger.log("Updated logs.textChannelID to " + channelId);
+
+        saveConfig();
+    }
+
+    @Override
+    public void onSlashCommandInteraction(SlashCommandInteractionEvent e) {
+        switch (e.getName()) {
+            case "setembed" -> {
+                setEmbed(e.getChannel().getId());
+                e.reply("Embed channel set!").setEphemeral(true).queue();
+            }
+            case "setlogs" -> {
+                setLogs(e.getChannel().getId());
+                e.reply("Log channel set!").setEphemeral(true).queue();
+            }
         }
     }
 
