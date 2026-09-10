@@ -7,6 +7,7 @@ import joni.status4discordmc.libs.ColorTranslator;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
 import java.awt.*;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -23,6 +25,7 @@ public class EmbedStatus {
     private final Logger logger;
     private final YamlDocument config;
     private final ScheduledExecutorService scheduler;
+    private ScheduledFuture<?> task;
 
     public EmbedStatus(JDA bot, Logger logger, ScheduledExecutorService scheduler) {
         this.bot = bot;
@@ -70,11 +73,15 @@ public class EmbedStatus {
             delay = 30;
         }
 
-        scheduler.scheduleWithFixedDelay(() -> {
+        // Cancel a previously scheduled task so repeated start() calls don't stack updaters
+        if (task != null)
+            task.cancel(false);
+
+        task = scheduler.scheduleWithFixedDelay(() -> {
             try {
                 String embedMessageID = config.getString("embedMessageID");
 
-                if (embedMessageID.isEmpty()) {
+                if (embedMessageID == null || embedMessageID.isEmpty()) {
                     TextChannel t = bot.getTextChannelById(config.getString("embed.textChannelID"));
                     if (t == null) return;
                     send(t);
@@ -83,7 +90,7 @@ public class EmbedStatus {
 
                 textChannel
                         .editMessageEmbedsById(embedMessageID, embed().build())
-                        .queue();
+                        .queue(null, this::handleUpdateFailure);
 
             } catch (Exception e) {
                 logger.severe("Updating the Embed failed: " + e.getMessage());
@@ -92,6 +99,30 @@ public class EmbedStatus {
         }, 1, delay, TimeUnit.SECONDS);
     }
 
+    private void handleUpdateFailure(Throwable failure) {
+        // 10008: Unknown Message -> the stored embed message was deleted on Discord's side
+        if (failure instanceof ErrorResponseException ex && ex.getErrorCode() == 10008) {
+
+            logger.warning(
+                    "The status embed message no longer exists (deleted?). Posting a new one..."
+            );
+
+            config.set("embedMessageID", "");
+            try {
+                config.save();
+                config.reload();
+            } catch (IOException e) {
+                logger.severe("Failed to clear embedMessageID: " + e.getMessage());
+            }
+
+            TextChannel t = bot.getTextChannelById(config.getString("embed.textChannelID"));
+            if (t != null)
+                send(t);
+            return;
+        }
+
+        logger.severe("Updating the Embed failed: " + failure.getMessage());
+    }
 
     private void send(TextChannel textChannel) {
         if (!textChannel.canTalk()) {
@@ -161,6 +192,9 @@ public class EmbedStatus {
         if (!config.getBoolean("embed.enabled"))
             return;
 
+        if (task != null)
+            task.cancel(false);
+
         EmbedBuilder e = buildEmbed("embed.offline");
 
         String mId = config.getString("embed.textChannelID");
@@ -169,7 +203,10 @@ public class EmbedStatus {
             TextChannel textChannel = bot.getTextChannelById(mId);
             if (textChannel == null) return;
             String embedMessageID = config.getString("embedMessageID");
+            if (embedMessageID == null || embedMessageID.isEmpty()) return;
             textChannel.editMessageEmbedsById(embedMessageID, e.build()).complete();
+        } catch (ErrorResponseException err) {
+            // Ignore 10008 (message already gone) and similar REST failures on shutdown
         } catch (Exception ignored) {
         }
     }
