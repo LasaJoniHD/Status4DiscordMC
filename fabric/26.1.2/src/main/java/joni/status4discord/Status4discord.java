@@ -1,30 +1,90 @@
 package joni.status4discord;
 
+import joni.status4discord.config.ConfigManager;
+import joni.status4discord.discord.Discord;
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.Identifier;
 
+import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 public class Status4discord implements ModInitializer {
-	public static final String MOD_ID = "status4discord";
+    public static final String MOD_ID = "status4discord";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    private static ConfigManager configManager;
+    private static Discord discord;
+    private static long startUp;
+    private static MinecraftServer serverInstance;
 
-	// This logger is used to write text to the console and the log file.
-	// It is considered best practice to use your mod id as the logger's name.
-	// That way, it's clear which mod wrote info, warnings, and errors.
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	@Override
-	public void onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
+    @Override
+    public void onInitialize() {
 
-		LOGGER.info("Hello Fabric world!");
-	}
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
 
-	public static Identifier id(String path) {
-		return Identifier.fromNamespaceAndPath(MOD_ID, path);
-	}
+            serverInstance = server;
+
+            // Config
+            try {
+                configManager = new ConfigManager();
+            } catch (IOException e) {
+                LOGGER.error("Failed to load/create config file! Please check if access to the file is granted!");
+                LOGGER.error("Disabling!");
+                return;
+            }
+
+            startUp = System.currentTimeMillis();
+
+            startDiscord();
+
+            LOGGER.info("Status4Discord initialized successfully!");
+
+        });
+
+        Commands.register();
+
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            if (discord != null)
+                discord.stop();
+        });
+
+    }
+
+    public static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
+    }
+
+    public static void startDiscord() {
+        discord = new Discord();
+        discord.start();
+    }
+
+    public static ConfigManager getConfigManager() {
+        return configManager;
+    }
+
+    public static Discord getDiscord() {
+        return discord;
+    }
+
+    public static long getStartUp() {
+        return startUp;
+    }
+
+    public static MinecraftServer getServerInstance() {
+        return serverInstance;
+    }
+
+    public static String getVersion() {
+        return FabricLoader.getInstance()
+                .getModContainer(MOD_ID)
+                .map(container -> container.getMetadata().getVersion().getFriendlyString())
+                .orElse("unknown");
+    }
 }

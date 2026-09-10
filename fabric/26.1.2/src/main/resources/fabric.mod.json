@@ -1,31 +1,28 @@
 {
-	"schemaVersion": 1,
-	"id": "status4discord",
-	"version": "${version}",
-	"name": "status4discord",
-	"description": "This is an example description! Tell everyone what your mod is about!",
-	"authors": [
-		"Me!"
-	],
-	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
-	},
-	"license": "CC0-1.0",
-	"icon": "assets/status4discord/icon.png",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"joni.status4discord.Status4discord"
-		]
-	},
-	"mixins": [
-		"status4discord.mixins.json"
-	],
-	"depends": {
-		"fabricloader": ">=0.19.5",
-		"minecraft": "~26.1.2",
-		"java": ">=25",
-		"fabric-api": "*"
-	}
+  "schemaVersion": 1,
+  "id": "status4discord",
+  "version": "${version}",
+  "name": "status4discord",
+  "description": "A discord bot, showing the current status of your server as embed, activity and more.",
+  "authors": [
+    "Joni"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/plugin/status4discord",
+    "sources": "https://github.com/LasaJoniHD/Status4DiscordMC"
+  },
+  "license": "Apache-2.0",
+  "icon": "assets/status4discord/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "joni.status4discord.Status4discord"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~26.1.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
 }

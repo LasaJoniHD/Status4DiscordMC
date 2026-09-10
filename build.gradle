@@ -1,8 +1,30 @@
-// Root project: building the root triggers the Bukkit shadowJar.
-// Fabric is included as a subproject but not wired up yet (build.gradle added later).
+// Root project
 
 tasks.register('build') {
     group = 'build'
     description = 'Builds the project.'
     dependsOn ':bukkit:shadowJar', ':fabric:26.1.2:jar'
+}
+
+def sharedDependencies = {
+    implementation 'dev.dejvokep:boosted-yaml:1.3.7'
+
+    implementation("net.dv8tion:JDA:6.6.0") {
+        exclude module: 'opus-java'
+        exclude module: 'tink'
+    }
+}
+
+subprojects {
+    repositories {
+        mavenCentral()
+    }
+
+    pluginManager.withPlugin('java') {
+        dependencies sharedDependencies
+    }
+
+    pluginManager.withPlugin('java-library') {
+        dependencies sharedDependencies
+    }
 }
