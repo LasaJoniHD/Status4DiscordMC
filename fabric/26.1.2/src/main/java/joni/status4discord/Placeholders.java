@@ -2,6 +2,7 @@ package joni.status4discord;
 
 
 import joni.status4discord.placeholders.CpuMonitor;
+import joni.status4discord.placeholders.FabricTPS;
 
 public class Placeholders {
 
@@ -35,9 +36,7 @@ public class Placeholders {
     }
 
     public static double getTPS(int m) {
-
-        return 0;
-
+        return FabricTPS.getTPS(m);
     }
 
     public static int getOnlinePlayers() {

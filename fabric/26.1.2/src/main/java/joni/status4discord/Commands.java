@@ -5,7 +5,6 @@ import com.mojang.brigadier.context.CommandContext;
 import joni.status4discord.libs.ColorTranslator;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.permissions.Permissions;
 
 import java.io.IOException;
@@ -39,7 +38,7 @@ public class Commands {
         CommandSourceStack source = context.getSource();
         source.sendSuccess(
                 () -> ColorTranslator.translateColor(
-                        "&f[&9Status&f4&9Discord&f] &6by Joni &9/help"
+                        "&f[&9Status&f4&9Discord&f] &6by Joni"
                 ),
                 false
         );
@@ -81,9 +80,9 @@ public class Commands {
 
     private static int executeInvite(CommandContext<CommandSourceStack> context) {
         CommandSourceStack source = context.getSource();
-        source.sendSuccess(() -> Component.literal(
-                ColorTranslator.translateColor("&f[&9Status&f4&9Discord&f] &6")
-                        + Status4discord.getDiscord().getInvitationLink()), false);
+        source.sendSuccess(() ->
+                        ColorTranslator.translateColor("&f[&9Status&f4&9Discord&f] &6" + Status4discord.getDiscord().getInvitationLink())
+                , false);
         return 1;
     }
 

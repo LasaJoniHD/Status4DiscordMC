@@ -2,9 +2,12 @@ package joni.status4discord;
 
 import joni.status4discord.config.ConfigManager;
 import joni.status4discord.discord.Discord;
+import joni.status4discord.libs.UpdateChecker;
+import joni.status4discord.placeholders.FabricTPS;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.Identifier;
 
@@ -13,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 public class Status4discord implements ModInitializer {
     public static final String MOD_ID = "status4discord";
@@ -43,8 +47,14 @@ public class Status4discord implements ModInitializer {
 
             startDiscord();
 
+            new UpdateChecker("status4discord", getVersion(), List.of("fabric"), List.of("26.1.2"));
+
             LOGGER.info("Status4Discord initialized successfully!");
 
+        });
+
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            FabricTPS.recordTick();
         });
 
         Commands.register();

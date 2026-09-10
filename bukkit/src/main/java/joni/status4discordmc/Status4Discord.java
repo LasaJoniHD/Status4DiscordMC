@@ -45,7 +45,7 @@ public class Status4Discord extends JavaPlugin {
                     .warning("TPS Placeholder is not supported on this server type yet.");
         } catch (ClassNotFoundException ignored) {
         }
-        
+
         if (!isPaper()) {
             getLogger().warning("This server is not running Paper! Some features may not work properly!");
             getLogger().warning("TPS Placeholder will not work properly!");
@@ -73,7 +73,7 @@ public class Status4Discord extends JavaPlugin {
         getCommand("status4discord").setExecutor(commands);
         getCommand("status4discord").setTabCompleter(commands);
 
-        UpdateChecker updateChecker = new UpdateChecker(this, "status4discord", getVersion(), List.of("paper", "spigot", "bukkit", "purpur"), null);
+        new UpdateChecker(this, "status4discord", getVersion(), List.of("paper", "spigot", "bukkit", "purpur"), null);
 
     }
 

@@ -52,7 +52,7 @@ public class Commands implements CommandExecutor, TabExecutor {
     }
 
     private void sendPluginInfo(CommandSender s) {
-        s.sendMessage(ColorTranslator.translateColor("&f[&9Status&f4&9Discord&f] &6by Joni &9/help"));
+        s.sendMessage(ColorTranslator.translateColor("&f[&9Status&f4&9Discord&f] &6by Joni"));
         s.sendMessage(ColorTranslator.translateColor("&f[&9Status&f4&9Discord&f] &6Version ")
                 + Status4Discord.getInstance().getVersion());
     }
